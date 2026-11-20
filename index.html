@@ -1,579 +1,849 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medan Prijaji (1907) — Kronik Pers Interaktif</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Notturno Experience — Interactive Graphic Novel</title>
 
-  <!-- Google Fonts -->
+  <!-- Fonts: Cinzel Decorative, Cormorant Garamond, Space Mono, Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-  <!-- Three.js & GSAP ScrollTrigger -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GSAP & ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <style>
     :root {
-      --bg-dark: #060505;
-      --text-cream: #f2ece1;
-      --text-muted: #8e8577;
-      --accent-gold: #d4a359;
-      --border-subtle: rgba(242, 236, 225, 0.14);
-      --font-serif: 'Newsreader', Georgia, serif;
-      --font-mono: 'Courier Prime', monospace;
+      --ink-black: #141413;
+      --paper-white: #F4F3EF;
+      --paper-shade: #E6E4DD;
+      --crimson-red: #B82925;
+      --crimson-dark: #7A1916;
+      --sepia-brown: #4E3B31;
+      --font-display: 'Cinzel Decorative', serif;
+      --font-serif: 'Cormorant Garamond', serif;
+      --font-mono: 'Space Mono', monospace;
       --font-sans: 'Plus Jakarta Sans', sans-serif;
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
-    html, body {
-      background-color: var(--bg-dark);
-      color: var(--text-cream);
+    body {
+      background-color: var(--paper-white);
+      color: var(--ink-black);
       font-family: var(--font-sans);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Kanvas 3D Full-Screen */
-    #webgl-canvas {
+    /* Tekstur Kertas & Tinta Halus di Seluruh Layar */
+    .paper-grain {
       position: fixed;
       inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
       pointer-events: none;
+      z-index: 9999;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     }
 
-    /* Vignette Sinematik */
-    .vignette {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      background: radial-gradient(circle at center, transparent 35%, rgba(6, 5, 5, 0.9) 100%);
-    }
-
-    /* Navigasi Minimalis */
-    .navbar {
+    /* ==================== FIXED NAVIGATION & ANCHORS ==================== */
+    .top-bar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      padding: 1.75rem 6%;
+      padding: 1.5rem 2.5rem;
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
+      z-index: 500;
+      pointer-events: none;
+    }
+
+    .brand-mark {
+      pointer-events: auto;
+      display: flex;
       align-items: center;
-      z-index: 50;
+      gap: 0.75rem;
+      color: var(--paper-white);
       mix-blend-mode: difference;
     }
 
-    .brand {
+    .brand-mark svg {
+      width: 42px;
+      height: 42px;
+    }
+
+    .brand-mark-text {
       font-family: var(--font-serif);
-      font-size: 1.15rem;
-      letter-spacing: 0.15em;
-      text-decoration: none;
-      color: var(--text-cream);
+      font-style: italic;
+      font-size: 1.35rem;
+      line-height: 0.9;
+      letter-spacing: 0.02em;
     }
 
-    .nav-links {
+    .nav-pill {
+      pointer-events: auto;
+      background: var(--paper-white);
+      border: 2px solid var(--ink-black);
+      padding: 0.65rem 1.4rem;
       display: flex;
-      gap: 2rem;
       align-items: center;
+      gap: 1.25rem;
+      box-shadow: 4px 4px 0px rgba(20, 20, 19, 0.25);
     }
 
-    .nav-links a, .audio-toggle {
-      background: none;
-      border: none;
-      color: var(--text-cream);
+    .nav-pill a {
       text-decoration: none;
-      font-family: var(--font-mono);
+      color: var(--ink-black);
+      font-family: var(--font-sans);
       font-size: 0.72rem;
-      letter-spacing: 0.2em;
+      font-weight: 700;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      cursor: pointer;
-      opacity: 0.75;
-      transition: opacity 0.3s;
+      transition: color 0.2s ease;
     }
 
-    .nav-links a:hover, .audio-toggle:hover {
+    .nav-pill a:hover {
+      color: var(--crimson-red);
+    }
+
+    /* Corner Red Anchor Labels (Muncul setelah Hero) */
+    .corner-anchors {
+      position: fixed;
+      top: 5.5rem;
+      left: 0;
+      width: 100%;
+      padding: 0 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      z-index: 400;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .corner-anchors.visible {
       opacity: 1;
     }
 
-    /* Konten Scrollytelling */
-    main {
-      position: relative;
-      z-index: 10;
+    .anchor-tag {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      line-height: 1.3;
+      color: var(--crimson-red);
+      text-transform: uppercase;
     }
 
-    .panel {
-      min-height: 115vh;
-      padding: 8rem 9%;
+    .anchor-tag.right {
+      text-align: right;
+    }
+
+    /* Audio Equalizer Button (Pojok Kanan Bawah) */
+    .audio-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2.5rem;
+      z-index: 500;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 24px;
+      padding: 4px;
+      mix-blend-mode: difference;
+    }
+
+    .eq-bar {
+      width: 2.5px;
+      background-color: var(--paper-white);
+      height: 6px;
+      transition: height 0.2s ease;
+    }
+
+    .audio-btn.playing .eq-bar:nth-child(1) { animation: eq 0.7s infinite alternate; }
+    .audio-btn.playing .eq-bar:nth-child(2) { animation: eq 0.5s infinite alternate 0.2s; }
+    .audio-btn.playing .eq-bar:nth-child(3) { animation: eq 0.8s infinite alternate 0.1s; }
+    .audio-btn.playing .eq-bar:nth-child(4) { animation: eq 0.4s infinite alternate 0.3s; }
+
+    @keyframes eq {
+      0% { height: 5px; }
+      100% { height: 20px; }
+    }
+
+    /* ==================== SECTION 1: OPENING HERO (BLACK INK) ==================== */
+    .hero-opening {
+      position: relative;
+      min-height: 105vh;
+      background-color: var(--ink-black);
+      color: var(--paper-white);
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
     }
 
-    .panel-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
+    /* Guratan Kuas Halus di Background Hero */
+    .brush-strokes {
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      background: 
+        repeating-radial-gradient(circle at 20% 30%, transparent 0, transparent 40px, #2a2a28 42px, transparent 45px),
+        repeating-linear-gradient(-12deg, transparent, transparent 35px, #262624 38px, transparent 42px);
+      pointer-events: none;
     }
 
-    .col-left { max-width: 520px; }
-    .col-right { max-width: 520px; margin-left: auto; }
-    .col-center { max-width: 720px; margin: 0 auto; text-align: center; }
+    .hero-title-wrap {
+      position: relative;
+      z-index: 10;
+      transform: translateY(-2rem);
+    }
 
-    .kicker {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--accent-gold);
+    .hero-the {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      letter-spacing: 0.25em;
       display: block;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.25rem;
     }
 
-    .heading {
-      font-family: var(--font-serif);
-      font-size: clamp(2.4rem, 5.2vw, 4.8rem);
-      font-weight: 300;
-      line-height: 1.08;
-      margin-bottom: 1.5rem;
-    }
-
-    .heading em {
-      font-style: italic;
-      color: var(--accent-gold);
-    }
-
-    .lead {
-      font-size: 1.08rem;
-      line-height: 1.8;
-      color: var(--text-muted);
-      font-weight: 300;
-    }
-
-    /* Kartu Kutipan Transparan */
-    .glass-quote {
-      margin-top: 2.5rem;
-      padding: 2.5rem;
-      border: 1px solid rgba(212, 163, 89, 0.3);
-      background: rgba(10, 9, 8, 0.65);
-      backdrop-filter: blur(8px);
-    }
-
-    .glass-quote p {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: clamp(1.3rem, 2.2vw, 1.85rem);
-      line-height: 1.45;
-      margin-bottom: 1rem;
-    }
-
-    .glass-quote span {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      color: var(--accent-gold);
+    .hero-main-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 7.5vw, 6.2rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
     }
 
-    /* Grid 3 Tonggak */
-    .grid-3 {
+    .interlocking-oo {
+      display: inline-block;
+      letter-spacing: -0.22em;
+      margin-right: 0.18em;
+    }
+
+    .scroll-hint {
+      margin-top: 2.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #9e9b93;
+    }
+
+    /* Cipratan Tinta Putih di Bawah Hero (Transisi ke Kertas Putih) */
+    .ink-splatter-transition {
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 180px;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    /* ==================== SECTION 2: GRAPHIC NOVEL COMIC STORY ==================== */
+    .comic-world {
+      background-color: var(--paper-white);
+      position: relative;
+      padding: 6rem 6% 8rem;
+    }
+
+    .chapter-container {
+      max-width: 1120px;
+      margin: 0 auto 12rem;
+      position: relative;
+    }
+
+    /* Panel Komik Trapesium dengan Border Tinta Kasar */
+    .comic-panel-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .trapezoid-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background-color: #EAE8E1;
+      /* Bentuk trapesium asimetris seperti di Santioni */
+      clip-path: polygon(4% 6%, 98% 0%, 94% 96%, 0% 100%);
+      overflow: hidden;
+      box-shadow: inset 0 0 60px rgba(20, 20, 19, 0.08);
+    }
+
+    /* Garis Tepi Tinta Hitam Mengikuti Bentuk Trapesium */
+    .trapezoid-border-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* Kotak Narasi Komik (Menembus Batas Panel) */
+    .caption-box {
+      position: relative;
+      z-index: 30;
+      background-color: var(--paper-white);
+      border: 2px solid var(--ink-black);
+      padding: 1.15rem 1.4rem;
+      max-width: 390px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.55;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      box-shadow: 5px 5px 0px var(--ink-black);
+    }
+
+    .caption-top-left {
+      margin-bottom: -2.2rem;
+      margin-left: -1.5rem;
+    }
+
+    .caption-bottom-left {
+      margin-top: -2.5rem;
+      margin-left: -2rem;
+    }
+
+    .caption-bottom-right {
+      margin-top: -2.5rem;
+      margin-left: auto;
+      margin-right: -1.5rem;
+    }
+
+    /* Efek Onomatopoeia (Suara Komik) */
+    .sfx-badge {
+      position: absolute;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--crimson-red);
+      letter-spacing: 0.12em;
+      transform: rotate(-8deg);
+      z-index: 25;
+      text-shadow: 2px 2px 0px var(--paper-white);
+      pointer-events: none;
+    }
+
+    /* Grid Ritual Komik (Chill, Shake, Pour) */
+    .comic-triptych {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 2.5rem;
-      margin-top: 4rem;
+      max-width: 1120px;
+      margin: 6rem auto 4rem;
     }
 
-    .step-box {
-      border-top: 1px solid var(--accent-gold);
-      padding-top: 1.75rem;
-      background: linear-gradient(180deg, rgba(16, 14, 12, 0.75) 0%, transparent 100%);
-      padding: 1.75rem;
+    .triptych-card {
+      position: relative;
     }
 
-    .step-box h3 {
+    .triptych-panel {
+      aspect-ratio: 4 / 5;
+      background: #ECEAE3;
+      border: 3px solid var(--ink-black);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .triptych-card:nth-child(1) .triptych-panel { transform: rotate(-1.5deg); }
+    .triptych-card:nth-child(2) .triptych-panel { transform: rotate(1.2deg) translateY(15px); }
+    .triptych-card:nth-child(3) .triptych-panel { transform: rotate(-1deg); }
+
+    .triptych-card:hover .triptych-panel {
+      transform: rotate(0deg) translateY(-6px);
+    }
+
+    .triptych-caption {
+      background: var(--paper-white);
+      border: 2px solid var(--ink-black);
+      padding: 0.9rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      line-height: 1.5;
+      font-weight: 700;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0px var(--ink-black);
+    }
+
+    /* ==================== SECTION 3: SELECT HOUSES & HARD-SPLIT FOOTER ==================== */
+    .forthcoming-section {
+      background-color: var(--paper-white);
+      padding: 7rem 2rem 6rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .forthcoming-title {
       font-family: var(--font-serif);
-      font-size: 1.65rem;
-      font-weight: 400;
-      margin: 0.75rem 0;
+      font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1.05;
+      text-transform: uppercase;
+      color: var(--ink-black);
     }
 
-    .step-box p {
-      font-size: 0.94rem;
-      line-height: 1.7;
-      color: var(--text-muted);
+    .forthcoming-sub {
+      margin-top: 1.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: var(--crimson-red);
+      text-transform: uppercase;
     }
 
-    /* Arsip Artikel */
-    .archive-list {
-      margin-top: 3rem;
-      border-top: 1px solid var(--border-subtle);
-    }
-
-    .archive-link {
+    /* Hard-Split Footer Hitam Pekat */
+    .footer-black {
+      background-color: var(--ink-black);
+      color: var(--paper-white);
+      padding: 4.5rem 3.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1.5rem;
-      padding: 2rem 0;
-      border-bottom: 1px solid var(--border-subtle);
-      text-decoration: none;
-      color: var(--text-cream);
-      transition: padding-left 0.35s ease;
-    }
-
-    .archive-link:hover {
-      padding-left: 1rem;
-      color: var(--accent-gold);
-    }
-
-    .archive-link h4 {
-      font-family: var(--font-serif);
-      font-size: clamp(1.3rem, 2.2vw, 1.8rem);
-      font-weight: 400;
-    }
-
-    .archive-link span {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    footer {
-      position: relative;
-      z-index: 10;
-      padding: 3rem 9%;
-      border-top: 1px solid var(--border-subtle);
-      display: flex;
-      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-muted);
+      gap: 2.5rem;
+      border-top: 4px solid var(--ink-black);
     }
 
-    footer a {
-      color: var(--text-cream);
+    .footer-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .footer-logo-group svg {
+      width: 68px;
+      height: 68px;
+    }
+
+    .footer-brand-script {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 2.2rem;
+      line-height: 0.85;
+    }
+
+    .footer-links-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+    }
+
+    .footer-links-right a {
+      color: var(--paper-white);
       text-decoration: none;
+      font-weight: 700;
+    }
+
+    .footer-links-right a:hover {
+      color: var(--crimson-red);
+    }
+
+    .footer-credits {
+      margin-top: 0.75rem;
+      color: #8E8C84;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-credits span {
+      text-decoration: underline;
+      color: var(--paper-white);
+    }
+
+    @media (max-width: 768px) {
+      .comic-triptych { grid-template-columns: 1fr; }
+      .caption-top-left, .caption-bottom-left, .caption-bottom-right {
+        margin: 1rem 0;
+        max-width: 100%;
+      }
+      .corner-anchors { display: none; }
+      .top-bar { padding: 1rem 1.25rem; }
+      .footer-black { flex-direction: column; text-align: center; }
+      .footer-links-right { text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Kanvas 3D WebGL -->
-  <canvas id="webgl-canvas"></canvas>
-  <div class="vignette"></div>
+  <!-- Tekstur Kertas & Tinta -->
+  <div class="paper-grain"></div>
 
-  <!-- Navigasi -->
-  <header class="navbar">
-    <a href="#babak-1" class="brand">MEDAN PRIJAJI</a>
-    <nav class="nav-links">
-      <a href="#babak-2">Manifesto</a>
-      <a href="#babak-3">Tonggak</a>
-      <a href="#babak-4">Arsip</a>
-      <button class="audio-toggle" id="audioBtn">Audio: Off</button>
+  <!-- Fixed Top Navigation -->
+  <header class="top-bar">
+    <div class="brand-mark">
+      <!-- Emblem Kubah & Biarawan -->
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="32" cy="32" r="28" />
+        <path d="M16 46 C16 24, 48 24, 48 46" />
+        <circle cx="32" cy="22" r="5" />
+        <path d="M24 46 L27 29 L37 29 L40 46" />
+        <line x1="32" y1="4" x2="32" y2="12" />
+      </svg>
+      <div class="brand-mark-text">Santioni<br>Spirits</div>
+    </div>
+
+    <nav class="nav-pill">
+      <a href="#experience">Experience</a>
+      <!-- Ikon Ilustrasi Merah Pemisah -->
+      <svg width="26" height="16" viewBox="0 0 36 20" fill="none" stroke="#B82925" stroke-width="1.5">
+        <path d="M2 12 C8 4, 14 16, 20 8 C26 2, 30 14, 34 8" />
+        <circle cx="18" cy="10" r="3" />
+      </svg>
+      <a href="#collection">Collection</a>
     </nav>
   </header>
 
-  <main>
-    <!-- BABAK 1 -->
-    <section class="panel" id="babak-1">
-      <div class="panel-inner">
-        <div class="col-left reveal">
-          <span class="kicker">Bandoeng &bull; 1907</span>
-          <h1 class="heading">Suara yang terbungkam di <em>tanah sendiri.</em></h1>
-          <p class="lead">
-            Di penghujung abad ke-19, surat kabar di Hindia Belanda hanya dikuasai pemodal kolonial. Kaum bumiputra sekadar menjadi objek berita tanpa ruang pembelaan hukum.
-          </p>
+  <!-- Corner Red Anchors -->
+  <div class="corner-anchors" id="cornerAnchors">
+    <div class="anchor-tag">SANTIONI<br>SPIRITS</div>
+    <div class="anchor-tag right">NOTTURNO<br>COLLECTION</div>
+  </div>
+
+  <!-- Audio Equalizer Toggle -->
+  <button class="audio-btn" id="audioBtn" title="Toggle Ambient Sound">
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+  </button>
+
+  <!-- ==================== 1. HERO OPENING (DARK INK & WHITE SPLATTER) ==================== -->
+  <section class="hero-opening" id="hero">
+    <div class="brush-strokes"></div>
+    
+    <div class="hero-title-wrap">
+      <span class="hero-the">THE</span>
+      <h1 class="hero-main-title">
+        N<span class="interlocking-oo">OO</span>TTURNO<br>EXPERIENCE
+      </h1>
+      <div class="scroll-hint">[ Scroll to Unfold the Tale ]</div>
+    </div>
+
+    <!-- Cipratan Tinta Putih di Bagian Bawah -->
+    <svg class="ink-splatter-transition" viewBox="0 0 1440 200" preserveAspectRatio="none">
+      <path fill="#F4F3EF" d="M0,200 L0,155 Q45,130 90,150 T190,135 Q240,110 290,145 T410,130 Q470,95 530,135 T660,120 Q720,85 785,125 T920,135 Q985,105 1050,140 T1190,125 Q1260,95 1330,140 T1440,130 L1440,200 Z" />
+      <!-- Tetesan tinta melayang -->
+      <circle cx="480" cy="85" r="14" fill="#F4F3EF" class="ink-drop" />
+      <circle cx="515" cy="70" r="7" fill="#F4F3EF" class="ink-drop" />
+      <circle cx="710" cy="65" r="18" fill="#F4F3EF" class="ink-drop" />
+      <circle cx="745" cy="82" r="9" fill="#F4F3EF" class="ink-drop" />
+      <circle cx="620" cy="95" r="11" fill="#F4F3EF" class="ink-drop" />
+    </svg>
+  </section>
+
+  <!-- ==================== 2. COMIC STORYTELLING ON PAPER WHITE ==================== -->
+  <main class="comic-world" id="experience">
+
+    <!-- CHAPTER 1: THE WANDERER IN THE MIST -->
+    <div class="chapter-container">
+      <div class="comic-panel-wrapper">
+        <div class="caption-box caption-top-left reveal-caption">
+          In an immense land of nothingness, a lonely figure wanders through the mist.
+        </div>
+
+        <div class="trapezoid-frame parallax-panel">
+          <!-- Ilustrasi SVG Gaya Ink-Wash & Arsir Kertas -->
+          <svg viewBox="0 0 800 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="inkHatch" width="8" height="8" patternTransform="rotate(35 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#141413" stroke-width="1" stroke-opacity="0.18" />
+              </pattern>
+            </defs>
+            <!-- Latar Kabut & Arsir -->
+            <rect width="800" height="500" fill="#ECEAE2" />
+            <rect width="800" height="500" fill="url(#inkHatch)" />
+            <!-- Guratan Kabut -->
+            <path d="M-50 320 Q200 270 450 310 T850 290 L850 500 L-50 500 Z" fill="#DCD9CE" />
+            <path d="M-50 380 Q280 340 520 390 T850 370 L850 500 L-50 500 Z" fill="#C9C5B8" />
+            
+            <!-- Sosok Biarawan Berjubah Cokelat Tinta -->
+            <g class="parallax-subject" transform="translate(360, 175)">
+              <!-- Bayangan di tanah -->
+              <ellipse cx="45" cy="215" rx="65" ry="12" fill="#141413" opacity="0.25" />
+              <!-- Jubah -->
+              <path d="M35 45 C20 90, 10 155, 5 210 L85 210 C80 155, 70 90, 55 45 Z" fill="#4E3B31" stroke="#141413" stroke-width="3" />
+              <!-- Lipatan Arsir Jubah -->
+              <path d="M38 75 L30 195 M52 75 L62 195 M45 95 L45 205" stroke="#141413" stroke-width="2" />
+              <!-- Tudung Kepala -->
+              <path d="M30 48 C28 20, 62 20, 60 48 C52 55, 38 55, 30 48 Z" fill="#3B2B23" stroke="#141413" stroke-width="3" />
+              <!-- Tongkat Kayu -->
+              <line x1="88" y1="30" x2="78" y2="212" stroke="#141413" stroke-width="4" stroke-linecap="round" />
+            </g>
+          </svg>
+
+          <!-- Garis Tepi Tinta Hitam Kasar -->
+          <svg class="trapezoid-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="4,6 98,0 94,96 0,100" fill="none" stroke="#141413" stroke-width="1.2" />
+            <polygon points="4.5,6.8 97.3,0.8 93.4,95.2 0.7,99.2" fill="none" stroke="#141413" stroke-width="0.4" />
+          </svg>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- BABAK 2 -->
-    <section class="panel" id="babak-2">
-      <div class="panel-inner">
-        <div class="col-center reveal">
-          <span class="kicker">Januari 1907 &mdash; Titik Balik</span>
-          <h2 class="heading">Lahirnya <em>Medan Prijaji</em>:<br>Pers sebagai Senjata Hukum.</h2>
-          <div class="glass-quote">
-            <p>“Sebuah surat kabar yang dikelola sepenuhnya oleh bangsa sendiri, untuk membela hak-hak kaum yang tertindas oleh kesewenang-wenangan.”</p>
-            <span>R.M. Tirto Adhi Soerjo &mdash; Pemimpin Redaksi</span>
+    <!-- CHAPTER 2: THE CRIMSON PORTAL (SESUAI SCREENSHOT TERAKHIR) -->
+    <div class="chapter-container">
+      <div class="comic-panel-wrapper">
+        <div class="sfx-badge" style="top: 12%; right: 8%;">HUMMM...</div>
+
+        <div class="trapezoid-frame parallax-panel">
+          <svg viewBox="0 0 800 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <!-- Pola Arsir Melingkar untuk Portal Merah -->
+              <pattern id="portalHatch" width="6" height="6" patternTransform="rotate(-25 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#4D0E0C" stroke-width="1.5" />
+              </pattern>
+            </defs>
+
+            <!-- Latar Putih Kertas -->
+            <rect width="800" height="500" fill="#F2F0E8" />
+
+            <!-- Portal Raksasa Merah Marun Berarsir -->
+            <g class="portal-orb" transform="translate(510, 235)">
+              <circle cx="0" cy="0" r="185" fill="#B82925" />
+              <circle cx="0" cy="0" r="185" fill="url(#portalHatch)" opacity="0.55" />
+              <circle cx="0" cy="0" r="155" fill="none" stroke="#6E1411" stroke-width="2" stroke-dasharray="12 6" />
+              <circle cx="0" cy="0" r="120" fill="none" stroke="#141413" stroke-width="1.5" opacity="0.4" />
+            </g>
+
+            <!-- Garis Tanah & Bayangan -->
+            <path d="M0 395 Q400 385 800 400 L800 500 L0 500 Z" fill="#141413" opacity="0.12" />
+            <line x1="40" y1="395" x2="760" y2="395" stroke="#141413" stroke-width="2.5" />
+
+            <!-- Siluet Biarawan & Keledai Menghadap Portal -->
+            <g class="parallax-subject" transform="translate(210, 245)">
+              <!-- Siluet Keledai/Kuda -->
+              <path d="M10 150 L15 95 L5 75 L18 68 L28 85 L75 85 L88 65 L95 72 L85 95 L92 150 L80 150 L75 112 L25 112 L20 150 Z" fill="#2A2623" stroke="#141413" stroke-width="2" />
+              <!-- Siluet Biarawan Berdiri di Sampingnya -->
+              <path d="M125 45 C115 80, 110 120, 108 150 L152 150 C150 120, 145 80, 135 45 Z" fill="#141413" />
+              <circle cx="130" cy="34" r="11" fill="#141413" />
+            </g>
+          </svg>
+
+          <!-- Bingkai Trapesium Tinta Hitam -->
+          <svg class="trapezoid-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="4,6 98,0 94,96 0,100" fill="none" stroke="#141413" stroke-width="1.3" />
+          </svg>
+        </div>
+
+        <!-- Kotak Narasi yang Menjorok Keluar Panel (Persis seperti di Screenshot) -->
+        <div class="caption-box caption-bottom-left reveal-caption">
+          As he approaches the portal, the holy sound grows stronger, shaking him to the core. Light begins to pulsate, inviting him closer.
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAPTER 3: THE NIGHT RITUAL (CHILL, SHAKE, POUR) -->
+    <div id="collection">
+      <div class="comic-triptych">
+        <!-- Panel 1: Chill -->
+        <div class="triptych-card">
+          <div class="triptych-panel">
+            <span class="sfx-badge" style="top: 14px; right: 16px; font-size: 1rem;">CLINK!</span>
+            <svg viewBox="0 0 300 375" width="100%" height="100%">
+              <rect width="300" height="375" fill="#EFECE4" />
+              <!-- Gelas Kristal & Es Batu -->
+              <polygon points="85,140 215,140 195,300 105,300" fill="none" stroke="#141413" stroke-width="4" />
+              <rect x="115" y="185" width="42" height="42" transform="rotate(-12 136 206)" fill="#DCD8CC" stroke="#141413" stroke-width="3" />
+              <rect x="150" y="215" width="38" height="38" transform="rotate(15 169 234)" fill="#DCD8CC" stroke="#141413" stroke-width="3" />
+              <line x1="95" y1="300" x2="205" y2="300" stroke="#141413" stroke-width="6" />
+            </svg>
+          </div>
+          <div class="triptych-caption">
+            01. Chill your spirit. The night starts after dinner.
+          </div>
+        </div>
+
+        <!-- Panel 2: Shake -->
+        <div class="triptych-card">
+          <div class="triptych-panel">
+            <span class="sfx-badge" style="top: 18px; left: 16px; font-size: 1rem;">SHHHK!</span>
+            <svg viewBox="0 0 300 375" width="100%" height="100%">
+              <rect width="300" height="375" fill="#E8E5DC" />
+              <!-- Cocktail Shaker Miring dengan Garis Gerak -->
+              <g transform="translate(150, 185) rotate(28)">
+                <rect x="-35" y="-65" width="70" height="130" rx="8" fill="#141413" />
+                <polygon points="-28,-65 28,-65 18,-95 -18,-95" fill="#B82925" stroke="#141413" stroke-width="3" />
+                <rect x="-12" y="-110" width="24" height="15" fill="#141413" />
+              </g>
+              <!-- Garis Aksi Komik -->
+              <path d="M55 110 Q40 150 55 190 M240 160 Q255 200 240 240" fill="none" stroke="#B82925" stroke-width="3" stroke-dasharray="8 5" />
+            </svg>
+          </div>
+          <div class="triptych-caption">
+            02. Shake your spirit. Let the night play on.
+          </div>
+        </div>
+
+        <!-- Panel 3: Pour -->
+        <div class="triptych-card">
+          <div class="triptych-panel">
+            <span class="sfx-badge" style="bottom: 24px; right: 16px; font-size: 1rem;">POUR...</span>
+            <svg viewBox="0 0 300 375" width="100%" height="100%">
+              <rect width="300" height="375" fill="#EFECE4" />
+              <!-- Aliran Cairan Merah Marun ke Gelas Coupe -->
+              <path d="M185 45 C175 110, 155 150, 150 205" fill="none" stroke="#B82925" stroke-width="8" stroke-linecap="round" />
+              <path d="M85 195 Q150 245 215 195 Z" fill="#B82925" stroke="#141413" stroke-width="3" />
+              <line x1="150" y1="220" x2="150" y2="315" stroke="#141413" stroke-width="4" />
+              <ellipse cx="150" cy="315" rx="45" ry="8" fill="none" stroke="#141413" stroke-width="3" />
+            </svg>
+          </div>
+          <div class="triptych-caption">
+            03. Pour your spirit. What happens next is up to you.
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- BABAK 3 -->
-    <section class="panel" id="babak-3">
-      <div class="panel-inner">
-        <div class="col-right reveal">
-          <span class="kicker">Revolusi Redaksi</span>
-          <h2 class="heading">Tiga tonggak <em>pers</em> pergerakan.</h2>
-          <p class="lead">
-            Transformasi surat kabar dari sekadar papan pengumuman menjadi ruang advokasi publik yang ditakuti pejabat kolonial.
-          </p>
-        </div>
-
-        <div class="grid-3">
-          <article class="step-box reveal">
-            <span class="kicker">01 // 1903</span>
-            <h3>Soenda Berita</h3>
-            <p>Dirintis di Cianjur sebagai surat kabar pertama yang dibiayai dan dikelola mandiri oleh pribumi tanpa modal Eropa.</p>
-          </article>
-          <article class="step-box reveal">
-            <span class="kicker">02 // 1907</span>
-            <h3>Medan Prijaji</h3>
-            <p>Membuka rubrik konsultasi hukum gratis dan berani membongkar penyalahgunaan wewenang secara terbuka.</p>
-          </article>
-          <article class="step-box reveal">
-            <span class="kicker">03 // 1912</span>
-            <h3>Warisan Pers</h3>
-            <p>Meski dibredel melalui <em>Persbreidel</em>, tradisi jurnalistiknya menyalakan pers pergerakan di seluruh Nusantara.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- BABAK 4 -->
-    <section class="panel" id="babak-4">
-      <div class="panel-inner">
-        <span class="kicker reveal">Dokumentasi &amp; Kajian</span>
-        <h2 class="heading reveal">Arsip Tulisan</h2>
-        <div class="archive-list">
-          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-link reveal">
-            <h4>R.M. Tirto Adhi Soerjo: Sang Pemula dan Bapak Pers Nasional</h4>
-            <span>Kajian I &rarr;</span>
-          </a>
-          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-link reveal">
-            <h4>Bahasa Perlawanan dan Rubrik Hukum dalam Medan Prijaji</h4>
-            <span>Kajian II &rarr;</span>
-          </a>
-          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-link reveal">
-            <h4>Persbreidel Ordonnantie: Cara Kolonial Membungkam Tinta Pribumi</h4>
-            <span>Kajian III &rarr;</span>
-          </a>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <footer>
-    <span>&copy; 2026 Kronik Pers Indonesia</span>
-    <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener">Kunjungi Blog Utama &rarr;</a>
+  <!-- ==================== 3. SELECT HOUSES & HARD-SPLIT BLACK FOOTER ==================== -->
+  <section class="forthcoming-section">
+    <h2 class="forthcoming-title">SELECT HOUSES<br>FORTHCOMING</h2>
+    <div class="forthcoming-sub">Indulge Now, Atone Later</div>
+  </section>
+
+  <footer class="footer-black">
+    <div class="footer-logo-group">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#F4F3EF" stroke-width="1.4">
+        <circle cx="32" cy="32" r="28" />
+        <path d="M16 46 C16 24, 48 24, 48 46" />
+        <circle cx="32" cy="22" r="5" />
+        <path d="M24 46 L27 29 L37 29 L40 46" />
+      </svg>
+      <div class="footer-brand-script">Santioni<br>Spirits</div>
+    </div>
+
+    <div class="footer-links-right">
+      <a href="#instagram">INSTAGRAM</a>
+      <a href="mailto:indulge@santionispirits.com">indulge@santionispirits.com</a>
+      <div class="footer-credits">
+        Made by <span>Active Theory</span> and <span>Plan8</span> &nbsp; <span>Legal</span>
+      </div>
+    </div>
   </footer>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. SETUP KANVAS THREE.JS
-    const canvas = document.getElementById("webgl-canvas");
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x060505, 0.06);
+    // 1. Munculkan Label Jangkar Merah Kiri-Kanan Setelah Melewati Hero Hitam
+    ScrollTrigger.create({
+      trigger: '.comic-world',
+      start: 'top 60%',
+      onEnter: () => document.getElementById('cornerAnchors').classList.add('visible'),
+      onLeaveBack: () => document.getElementById('cornerAnchors').classList.remove('visible')
+    });
 
-    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 7.5);
+    // 2. Animasi Tetesan Tinta Putih Naik Saat Di-scroll
+    gsap.to('.ink-drop', {
+      y: -45,
+      scrollTrigger: {
+        trigger: '.hero-opening',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+      }
+    });
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3;
+    // 3. Animasi Parallax Panel Komik & Portal Merah Berdenyut
+    gsap.to('.portal-orb', {
+      scale: 1.08,
+      rotation: 12,
+      duration: 3.5,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    });
 
-    // Pencahayaan Studio Dramatis
-    scene.add(new THREE.AmbientLight(0x2a2218, 1.4));
-
-    const spotLight = new THREE.SpotLight(0xd4a359, 1.8, 30, Math.PI / 4, 0.6, 1);
-    spotLight.position.set(4, 5, 6);
-    scene.add(spotLight);
-
-    const rimLight = new THREE.PointLight(0x9e2a2b, 1.5, 16);
-    rimLight.position.set(-4, -3, 3);
-    scene.add(rimLight);
-
-    // 2. TEKSTUR HALAMAN DEPAN KORAN 3D
-    function createNewspaperTexture() {
-      const c = document.createElement("canvas");
-      c.width = 1024;
-      c.height = 1440;
-      const ctx = c.getContext("2d");
-
-      ctx.fillStyle = "#dfd2bc";
-      ctx.fillRect(0, 0, 1024, 1440);
-
-      ctx.strokeStyle = "#181512";
-      ctx.lineWidth = 6;
-      ctx.strokeRect(42, 42, 940, 1356);
-
-      ctx.fillStyle = "#181512";
-      ctx.font = "bold 72px Georgia, serif";
-      ctx.textAlign = "center";
-      ctx.fillText("MEDAN PRIJAJI", 512, 150);
-
-      ctx.font = "22px Courier New, monospace";
-      ctx.fillText("TAHOEN KE-I  •  BANDOENG 1907  •  NO. 1", 512, 195);
-
-      ctx.beginPath();
-      ctx.moveTo(72, 220);
-      ctx.lineTo(952, 220);
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      ctx.font = "italic 25px Georgia, serif";
-      ctx.fillText("“Soeara bagi sekalian anak negeri jang tertindas”", 512, 260);
-
-      // Kolom Cetak Klasik
-      ctx.fillStyle = "rgba(24, 21, 18, 0.78)";
-      for (let col = 0; col < 3; col++) {
-        const x = 84 + col * 295;
-        ctx.fillRect(x, 315, 250, 16);
-        for (let row = 0; row < 45; row++) {
-          const y = 355 + row * 22;
-          const w = (row % 7 === 6) ? 150 : 265;
-          ctx.fillRect(x, y, w, 7);
+    gsap.utils.toArray('.parallax-subject').forEach((subject) => {
+      gsap.fromTo(subject,
+        { y: 25 },
+        {
+          y: -25,
+          scrollTrigger: {
+            trigger: subject,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2
+          }
         }
+      );
+    });
+
+    // 4. Reveal Kotak Narasi Komik (Pop-Out Caption Boxes)
+    gsap.utils.toArray('.reveal-caption').forEach((box) => {
+      gsap.fromTo(box,
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.9,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: box,
+            start: 'top 88%',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
+    });
+
+    // 5. Efek Suara Ambien Misterius (Web Audio API)
+    const audioBtn = document.getElementById('audioBtn');
+    let audioCtx = null;
+    let isPlaying = false;
+    let droneOsc = null;
+
+    audioBtn.addEventListener('click', () => {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
 
-      const tex = new THREE.CanvasTexture(c);
-      tex.anisotropy = 8;
-      return tex;
-    }
+      if (!isPlaying) {
+        // Membuat suara dengung mistis ("holy sound" portal)
+        droneOsc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        droneOsc.type = 'sine';
+        droneOsc.frequency.setValueAtTime(110, audioCtx.currentTime); // Nada A2 rendah
+        gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        
+        droneOsc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        droneOsc.start();
 
-    // 3. OBJEK PUSAT 3D (PELAT ARSIP MELENGKUNG + PARTIKEL EMAS)
-    const artifactGroup = new THREE.Group();
-    artifactGroup.position.set(1.65, 0, 0);
-
-    const plateGeo = new THREE.BoxGeometry(2.7, 3.8, 0.08, 24, 24, 1);
-    const pos = plateGeo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const vx = pos.getX(i);
-      pos.setZ(i, pos.getZ(i) + Math.cos(vx * 0.85) * 0.16);
-    }
-    plateGeo.computeVertexNormals();
-
-    const brassEdge = new THREE.MeshStandardMaterial({ color: 0x9c7a3c, metalness: 0.8, roughness: 0.25 });
-    const paperFace = new THREE.MeshStandardMaterial({ map: createNewspaperTexture(), roughness: 0.6, metalness: 0.1 });
-
-    const frontPlate = new THREE.Mesh(plateGeo, [brassEdge, brassEdge, brassEdge, brassEdge, paperFace, paperFace]);
-    frontPlate.rotation.set(0.08, -0.45, -0.04);
-    artifactGroup.add(frontPlate);
-
-    // Silinder Penggulung Kuningan di Belakang
-    const rollerGeo = new THREE.CylinderGeometry(0.16, 0.16, 4.2, 32);
-    const roller = new THREE.Mesh(rollerGeo, brassEdge);
-    roller.position.set(0, 0, -0.35);
-    artifactGroup.add(roller);
-
-    scene.add(artifactGroup);
-
-    // Partikel Debu Cahaya Emas
-    const pCount = 300;
-    const pGeo = new THREE.BufferGeometry();
-    const pPos = new Float32Array(pCount * 3);
-    for (let i = 0; i < pCount * 3; i++) pPos[i] = (Math.random() - 0.5) * 16;
-    pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
-    const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xd4a359, size: 0.032, transparent: true, opacity: 0.6 }));
-    scene.add(particles);
-
-    // 4. INTERAKSI KURSOR & RENDER LOOP
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener("mousemove", (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
-
-    const clock = new THREE.Clock();
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      artifactGroup.position.y = Math.sin(t * 0.9) * 0.1;
-      frontPlate.rotation.z = -0.04 + Math.sin(t * 0.6) * 0.02 + mouseX * 0.06;
-      frontPlate.rotation.x = 0.08 + mouseY * 0.06;
-      particles.rotation.y = t * 0.03;
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // 5. KOREOGRAFI SCROLL-SCRUBBING (GSAP SCROLLTRIGGER)
-    // Babak 1 -> Babak 2: Objek bergerak ke tengah & lampu sorot terang
-    gsap.to(artifactGroup.position, {
-      x: 0, z: 1.2,
-      scrollTrigger: { trigger: "#babak-2", start: "top bottom", end: "center center", scrub: 1.2 }
-    });
-    gsap.to(frontPlate.rotation, {
-      y: 0.05,
-      scrollTrigger: { trigger: "#babak-2", start: "top bottom", end: "center center", scrub: 1.2 }
-    });
-    gsap.to(spotLight, {
-      intensity: 3.4,
-      scrollTrigger: { trigger: "#babak-2", start: "top 80%", end: "center center", scrub: true }
-    });
-
-    // Babak 2 -> Babak 3: Objek bergeser ke kiri & berputar 360 derajat
-    gsap.to(artifactGroup.position, {
-      x: -1.75, z: 0.3,
-      scrollTrigger: { trigger: "#babak-3", start: "top bottom", end: "center center", scrub: 1.2 }
-    });
-    gsap.to(frontPlate.rotation, {
-      y: Math.PI * 2 - 0.3,
-      scrollTrigger: { trigger: "#babak-3", start: "top bottom", end: "bottom top", scrub: 1.5 }
-    });
-
-    // Babak 4: Objek menjauh & meredup agar daftar arsip tajam terbaca
-    gsap.to(artifactGroup.position, {
-      x: 0, z: -2.8,
-      scrollTrigger: { trigger: "#babak-4", start: "top bottom", end: "top 30%", scrub: 1 }
-    });
-    gsap.to(spotLight, {
-      intensity: 0.5,
-      scrollTrigger: { trigger: "#babak-4", start: "top 80%", end: "top 30%", scrub: true }
-    });
-
-    // Animasi Muncul Teks
-    gsap.utils.toArray(".reveal").forEach((el) => {
-      gsap.fromTo(el, { opacity: 0, y: 40 }, {
-        opacity: 1, y: 0, duration: 1, ease: "power3.out",
-        scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }
-      });
-    });
-
-    // 6. AUDIO AMBIEN (WEB AUDIO API)
-    let audioCtx = null, osc = null, playing = false;
-    const audioBtn = document.getElementById("audioBtn");
-    audioBtn.addEventListener("click", () => {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (playing) {
-        osc.stop(); osc = null; playing = false;
-        audioBtn.textContent = "Audio: Off";
+        isPlaying = true;
+        audioBtn.classList.add('playing');
       } else {
-        osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(55, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        playing = true;
-        audioBtn.textContent = "Audio: On";
+        if (droneOsc) droneOsc.stop();
+        isPlaying = false;
+        audioBtn.classList.remove('playing');
       }
     });
   </script>
