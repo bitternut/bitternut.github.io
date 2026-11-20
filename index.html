@@ -3,40 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medan Prijaji (1907) — Kronik Pers Nasional</title>
+  <title>Medan Prijaji (1907) — Kronik Pers Interaktif</title>
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;1,6..72,300;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
+  <!-- Three.js & GSAP ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     :root {
-      --bg-void: #050404;
+      --bg-dark: #060505;
       --text-cream: #f2ece1;
-      --text-dim: #a89d8e;
-      --gold-ink: #d4a359;
-      --crimson-stamp: #9e2a2b;
-      --border-glass: rgba(242, 236, 225, 0.2);
+      --text-muted: #8e8577;
+      --accent-gold: #d4a359;
+      --border-subtle: rgba(242, 236, 225, 0.14);
       --font-serif: 'Newsreader', Georgia, serif;
       --font-mono: 'Courier Prime', monospace;
       --font-sans: 'Plus Jakarta Sans', sans-serif;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; background-color: var(--bg-void); }
-    body {
-      background-color: var(--bg-void);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg-dark);
       color: var(--text-cream);
       font-family: var(--font-sans);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    #webgl-stage {
+    /* Kanvas 3D Full-Screen */
+    #webgl-canvas {
       position: fixed;
       inset: 0;
       width: 100vw;
@@ -45,462 +51,319 @@
       pointer-events: none;
     }
 
-    .cinema-vignette {
+    /* Vignette Sinematik */
+    .vignette {
       position: fixed;
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      background: radial-gradient(circle at center, transparent 35%, rgba(5, 4, 4, 0.85) 100%);
+      background: radial-gradient(circle at center, transparent 35%, rgba(6, 5, 5, 0.9) 100%);
     }
 
-    .film-grain {
+    /* Navigasi Minimalis */
+    .navbar {
       position: fixed;
-      inset: 0;
-      z-index: 3;
-      pointer-events: none;
-      opacity: 0.04;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    }
-
-    /* 1. OPENING GATE SEMI-TRANSPARAN (Animasi 3D langsung terlihat di belakangnya!) */
-    .editorial-gate {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(5, 4, 4, 0.55) 0%, rgba(5, 4, 4, 0.92) 100%);
-      backdrop-filter: blur(4px);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.1s, backdrop-filter 1.1s;
-    }
-    .editorial-gate.is-unlocked {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      backdrop-filter: blur(0px);
-    }
-    .gate-meta {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--gold-ink);
-      margin-bottom: 1.75rem;
-      animation: fadeDown 1s ease forwards;
-    }
-    .gate-headline {
-      font-family: var(--font-serif);
-      font-size: clamp(2.1rem, 5.2vw, 4.1rem);
-      font-weight: 300;
-      line-height: 1.12;
-      max-width: 820px;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
-      animation: fadeUp 1.1s ease forwards;
-    }
-    .gate-headline em { font-style: italic; color: var(--gold-ink); }
-    .gate-desc {
-      font-size: 0.95rem;
-      color: var(--text-dim);
-      max-width: 500px;
-      line-height: 1.7;
-      margin-bottom: 2.75rem;
-      animation: fadeUp 1.3s ease forwards;
-    }
-    .gate-actions {
-      display: flex;
-      gap: 1.25rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      animation: fadeUp 1.5s ease forwards;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(22px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-14px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .btn-editorial {
-      background: rgba(5, 4, 4, 0.6);
-      border: 1px solid var(--border-glass);
-      color: var(--text-cream);
-      padding: 0.95rem 2.25rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.4s ease;
-    }
-    .btn-editorial.primary {
-      border-color: var(--gold-ink);
-      color: var(--gold-ink);
-      box-shadow: 0 0 25px rgba(212, 163, 89, 0.18);
-    }
-    .btn-editorial:hover {
-      background-color: var(--gold-ink);
-      color: var(--bg-void);
-      border-color: var(--gold-ink);
-      box-shadow: 0 0 35px rgba(212, 163, 89, 0.45);
-    }
-
-    /* 2. NAVIGASI */
-    .top-nav {
-      position: fixed;
-      top: 0; left: 0; width: 100%;
-      padding: 1.85rem 6%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.75rem 6%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 100;
+      z-index: 50;
       mix-blend-mode: difference;
     }
-    .nav-logo {
+
+    .brand {
       font-family: var(--font-serif);
       font-size: 1.15rem;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.15em;
       text-decoration: none;
       color: var(--text-cream);
     }
-    .nav-menu { display: flex; gap: 2.25rem; align-items: center; }
-    .nav-menu a, .sound-toggle {
-      background: none; border: none; color: var(--text-cream);
-      text-decoration: none; font-family: var(--font-mono);
-      font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
-      cursor: pointer; opacity: 0.75; transition: opacity 0.3s;
-    }
-    .nav-menu a:hover, .sound-toggle:hover { opacity: 1; }
 
-    /* 3. HOME / HERO SECTION */
-    main { position: relative; z-index: 10; }
-    .story-section {
-      min-height: 120vh;
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a, .audio-toggle {
+      background: none;
+      border: none;
+      color: var(--text-cream);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0.75;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover, .audio-toggle:hover {
+      opacity: 1;
+    }
+
+    /* Konten Scrollytelling */
+    main {
+      position: relative;
+      z-index: 10;
+    }
+
+    .panel {
+      min-height: 115vh;
       padding: 8rem 9%;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      position: relative;
     }
-    .hero-home {
-      min-height: 100vh;
-      padding-top: 7rem;
-      padding-bottom: 5rem;
+
+    .panel-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .section-inner { max-width: 1140px; margin: 0 auto; width: 100%; }
-    .split-left { max-width: 550px; }
-    .split-right { max-width: 530px; margin-left: auto; }
-    .center-stage { text-align: center; max-width: 780px; margin: 0 auto; }
 
-    .line-mask { overflow: hidden; display: block; }
-    .line-inner { display: block; transform: translateY(110%); }
+    .col-left { max-width: 520px; }
+    .col-right { max-width: 520px; margin-left: auto; }
+    .col-center { max-width: 720px; margin: 0 auto; text-align: center; }
 
-    .eyebrow {
+    .kicker {
       font-family: var(--font-mono);
       font-size: 0.72rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: var(--gold-ink);
+      color: var(--accent-gold);
       display: block;
       margin-bottom: 1.25rem;
     }
-    .hero-title {
+
+    .heading {
       font-family: var(--font-serif);
-      font-size: clamp(2.6rem, 5.6vw, 5.1rem);
+      font-size: clamp(2.4rem, 5.2vw, 4.8rem);
       font-weight: 300;
       line-height: 1.08;
       margin-bottom: 1.5rem;
     }
-    .hero-title em { font-style: italic; color: var(--gold-ink); }
 
-    .hero-gold-rule {
-      width: 0px;
-      height: 1px;
-      background: linear-gradient(90deg, var(--gold-ink), transparent);
-      margin-bottom: 1.5rem;
+    .heading em {
+      font-style: italic;
+      color: var(--accent-gold);
     }
 
-    .typewriter-bar {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--gold-ink);
-      margin-bottom: 1.25rem;
-      min-height: 1.4em;
-      letter-spacing: 0.04em;
-    }
-    .typewriter-cursor {
-      display: inline-block;
-      width: 8px;
-      height: 1em;
-      background-color: var(--gold-ink);
-      vertical-align: middle;
-      margin-left: 4px;
-      animation: blinkCursor 0.75s infinite;
-    }
-    @keyframes blinkCursor {
-      0%, 49% { opacity: 1; }
-      50%, 100% { opacity: 0; }
-    }
-
-    .body-copy {
-      font-size: clamp(1rem, 1.45vw, 1.18rem);
-      color: var(--text-dim);
+    .lead {
+      font-size: 1.08rem;
+      line-height: 1.8;
+      color: var(--text-muted);
       font-weight: 300;
-      line-height: 1.85;
     }
 
-    .scroll-prompt {
-      position: absolute;
-      bottom: 2.2rem;
-      left: 9%;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      opacity: 0;
-    }
-    .scroll-line-track {
-      width: 48px;
-      height: 1px;
-      background: rgba(242, 236, 225, 0.2);
-      position: relative;
-      overflow: hidden;
-    }
-    .scroll-line-pulse {
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: var(--gold-ink);
-      animation: pulseSlide 2.2s infinite cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    @keyframes pulseSlide {
-      0% { left: -100%; }
-      50% { left: 0%; }
-      100% { left: 100%; }
-    }
-    .scroll-label {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-
-    /* BABAK II, III, IV */
-    .manifesto-card {
+    /* Kartu Kutipan Transparan */
+    .glass-quote {
       margin-top: 2.5rem;
-      padding: 2.75rem;
+      padding: 2.5rem;
       border: 1px solid rgba(212, 163, 89, 0.3);
-      background: rgba(10, 9, 8, 0.72);
-      backdrop-filter: blur(10px);
-      position: relative;
+      background: rgba(10, 9, 8, 0.65);
+      backdrop-filter: blur(8px);
     }
-    .stamp-badge {
-      position: absolute;
-      top: -13px; left: 50%; transform: translateX(-50%);
-      background: var(--crimson-stamp); color: var(--text-cream);
-      font-family: var(--font-mono); font-size: 0.65rem;
-      letter-spacing: 0.22em; padding: 0.3rem 0.9rem; text-transform: uppercase;
-    }
-    .manifesto-quote {
+
+    .glass-quote p {
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+      font-size: clamp(1.3rem, 2.2vw, 1.85rem);
       line-height: 1.45;
-      color: var(--text-cream);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1rem;
     }
-    .manifesto-credit {
+
+    .glass-quote span {
       font-family: var(--font-mono);
       font-size: 0.72rem;
       letter-spacing: 0.2em;
-      color: var(--gold-ink);
+      color: var(--accent-gold);
       text-transform: uppercase;
     }
 
-    .ritual-steps {
+    /* Grid 3 Tonggak */
+    .grid-3 {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2.5rem;
       margin-top: 4rem;
     }
-    .ritual-card {
-      padding: 2.25rem;
-      border-top: 1px solid var(--gold-ink);
-      background: linear-gradient(180deg, rgba(16, 14, 12, 0.82) 0%, rgba(5, 4, 4, 0.45) 100%);
-      backdrop-filter: blur(6px);
-    }
-    .ritual-num {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--gold-ink);
-      letter-spacing: 0.2em;
-      display: block;
-      margin-bottom: 1rem;
-    }
-    .ritual-title { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 400; margin-bottom: 0.85rem; }
-    .ritual-text { font-size: 0.94rem; color: var(--text-dim); line-height: 1.75; }
 
-    .archive-section {
-      min-height: 100vh;
-      padding: 8rem 9%;
-      background: linear-gradient(180deg, transparent 0%, rgba(5, 4, 4, 0.96) 20%);
+    .step-box {
+      border-top: 1px solid var(--accent-gold);
+      padding-top: 1.75rem;
+      background: linear-gradient(180deg, rgba(16, 14, 12, 0.75) 0%, transparent 100%);
+      padding: 1.75rem;
     }
-    .archive-table { margin-top: 3.5rem; border-top: 1px solid var(--border-glass); }
-    .archive-row {
-      display: grid;
-      grid-template-columns: 170px 1fr auto;
+
+    .step-box h3 {
+      font-family: var(--font-serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+      margin: 0.75rem 0;
+    }
+
+    .step-box p {
+      font-size: 0.94rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    /* Arsip Artikel */
+    .archive-list {
+      margin-top: 3rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .archive-link {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 2rem;
-      padding: 2.1rem 0;
-      border-bottom: 1px solid var(--border-glass);
+      gap: 1.5rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border-subtle);
       text-decoration: none;
       color: var(--text-cream);
       transition: padding-left 0.35s ease;
     }
-    .archive-row:hover { padding-left: 1.25rem; }
-    .archive-row:hover .row-title { color: var(--gold-ink); }
-    .row-date { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.16em; color: var(--text-dim); text-transform: uppercase; }
-    .row-title { font-family: var(--font-serif); font-size: clamp(1.35rem, 2.3vw, 1.9rem); font-weight: 400; transition: color 0.3s; }
-    .row-badge { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.35rem 0.9rem; border: 1px solid var(--border-glass); color: var(--gold-ink); }
+
+    .archive-link:hover {
+      padding-left: 1rem;
+      color: var(--accent-gold);
+    }
+
+    .archive-link h4 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+      font-weight: 400;
+    }
+
+    .archive-link span {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
 
     footer {
-      position: relative; z-index: 10; padding: 3.5rem 9%;
-      border-top: 1px solid var(--border-glass); background-color: var(--bg-void);
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
-      font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.12em;
+      position: relative;
+      z-index: 10;
+      padding: 3rem 9%;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
     }
-    footer a { color: var(--text-cream); text-decoration: none; }
 
-    @media (max-width: 860px) {
-      .ritual-steps { grid-template-columns: 1fr; }
-      .archive-row { grid-template-columns: 1fr; gap: 0.5rem; }
-      .row-badge { width: fit-content; }
+    footer a {
+      color: var(--text-cream);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-  <canvas id="webgl-stage"></canvas>
-  <div class="cinema-vignette"></div>
-  <div class="film-grain"></div>
+  <!-- Kanvas 3D WebGL -->
+  <canvas id="webgl-canvas"></canvas>
+  <div class="vignette"></div>
 
-  <!-- GERBANG PEMBUKA (Sekarang transparan berkabut agar 3D langsung terlihat) -->
-  <div class="editorial-gate" id="editorialGate">
-    <span class="gate-meta">Bandoeng &bull; 1907 &bull; Arsip Digital Pers</span>
-    <h1 class="gate-headline">Sebelum bangsa ini merdeka, <em>tinta</em> lebih dulu menyalakan perlawanan.</h1>
-    <p class="gate-desc">Pengalaman visual 3D tentang lahirnya Medan Prijaji—surat kabar pribumi pertama yang menjadikan jurnalisme sebagai senjata pembela rakyat.</p>
-    <div class="gate-actions">
-      <button class="btn-editorial primary" id="btnStartAudio">Masuk dengan Suara</button>
-      <button class="btn-editorial" id="btnStartSilent">Masuk Tanpa Suara</button>
-    </div>
-  </div>
-
-  <!-- NAVIGASI -->
-  <header class="top-nav">
-    <a href="#act-1" class="nav-logo">MEDAN PRIJAJI</a>
-    <nav class="nav-menu">
-      <a href="#act-2">Manifesto</a>
-      <a href="#act-3">Tiga Babak</a>
-      <a href="#act-4">Arsip</a>
-      <button class="sound-toggle" id="soundToggle">Audio: Off</button>
+  <!-- Navigasi -->
+  <header class="navbar">
+    <a href="#babak-1" class="brand">MEDAN PRIJAJI</a>
+    <nav class="nav-links">
+      <a href="#babak-2">Manifesto</a>
+      <a href="#babak-3">Tonggak</a>
+      <a href="#babak-4">Arsip</a>
+      <button class="audio-toggle" id="audioBtn">Audio: Off</button>
     </nav>
   </header>
 
   <main>
-    <section class="story-section hero-home" id="act-1">
-      <div class="section-inner">
-        <div class="split-left">
-          <span class="eyebrow hero-fade">Babak I &mdash; Penghujung Abad ke-19</span>
-          <h2 class="hero-title">
-            <span class="line-mask"><span class="line-inner">Suara yang</span></span>
-            <span class="line-mask"><span class="line-inner">terbungkam di</span></span>
-            <span class="line-mask"><span class="line-inner"><em>tanah sendiri.</em></span></span>
-          </h2>
-          <div class="hero-gold-rule" id="heroRule"></div>
-          <div class="typewriter-bar"><span id="liveTypeText"></span><span class="typewriter-cursor"></span></div>
-          <p class="body-copy hero-fade">
-            Di bawah bayang-bayang kolonial Hindia Belanda, mesin cetak dikuasai pemodal Eropa. Kaum bumiputra sekadar menjadi objek berita—tanpa panggung, tanpa hak jawab, dan tanpa pembelaan hukum.
+    <!-- BABAK 1 -->
+    <section class="panel" id="babak-1">
+      <div class="panel-inner">
+        <div class="col-left reveal">
+          <span class="kicker">Bandoeng &bull; 1907</span>
+          <h1 class="heading">Suara yang terbungkam di <em>tanah sendiri.</em></h1>
+          <p class="lead">
+            Di penghujung abad ke-19, surat kabar di Hindia Belanda hanya dikuasai pemodal kolonial. Kaum bumiputra sekadar menjadi objek berita tanpa ruang pembelaan hukum.
           </p>
         </div>
       </div>
-
-      <div class="scroll-prompt" id="scrollPrompt">
-        <div class="scroll-line-track"><div class="scroll-line-pulse"></div></div>
-        <span class="scroll-label">Gulir untuk membuka arsip</span>
-      </div>
     </section>
 
-    <section class="story-section" id="act-2">
-      <div class="section-inner">
-        <div class="center-stage reveal-block">
-          <span class="eyebrow">Babak II &mdash; Bandung, Januari 1907</span>
-          <h2 class="hero-title">Lahirnya <em>Medan Prijaji</em>:<br>Pers sebagai Senjata Hukum.</h2>
-          <div class="manifesto-card">
-            <span class="stamp-badge">Dokumen Pendirian &bull; 1907</span>
-            <p class="manifesto-quote">
-              “Sebuah surat kabar yang dikelola sepenuhnya oleh bangsa sendiri, untuk membela hak-hak kaum yang tertindas oleh kesewenang-wenangan.”
-            </p>
-            <span class="manifesto-credit">R.M. Tirto Adhi Soerjo &mdash; Pemimpin Redaksi</span>
+    <!-- BABAK 2 -->
+    <section class="panel" id="babak-2">
+      <div class="panel-inner">
+        <div class="col-center reveal">
+          <span class="kicker">Januari 1907 &mdash; Titik Balik</span>
+          <h2 class="heading">Lahirnya <em>Medan Prijaji</em>:<br>Pers sebagai Senjata Hukum.</h2>
+          <div class="glass-quote">
+            <p>“Sebuah surat kabar yang dikelola sepenuhnya oleh bangsa sendiri, untuk membela hak-hak kaum yang tertindas oleh kesewenang-wenangan.”</p>
+            <span>R.M. Tirto Adhi Soerjo &mdash; Pemimpin Redaksi</span>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="story-section" id="act-3">
-      <div class="section-inner">
-        <div class="split-right reveal-block">
-          <span class="eyebrow">Babak III &mdash; Revolusi Redaksi</span>
-          <h2 class="hero-title">Tiga tonggak <em>pers</em> pergerakan.</h2>
-          <p class="body-copy">
-            Tirto Adhi Soerjo merumuskan metode jurnalisme advokasi yang mengubah surat kabar dari sekadar papan pengumuman menjadi ruang pengadilan publik.
+    <!-- BABAK 3 -->
+    <section class="panel" id="babak-3">
+      <div class="panel-inner">
+        <div class="col-right reveal">
+          <span class="kicker">Revolusi Redaksi</span>
+          <h2 class="heading">Tiga tonggak <em>pers</em> pergerakan.</h2>
+          <p class="lead">
+            Transformasi surat kabar dari sekadar papan pengumuman menjadi ruang advokasi publik yang ditakuti pejabat kolonial.
           </p>
         </div>
 
-        <div class="ritual-steps">
-          <article class="ritual-card stagger-card">
-            <span class="ritual-num">01 // 1903 &mdash; SOENDA BERITA</span>
-            <h3 class="ritual-title">Kemandirian Modal</h3>
-            <p class="ritual-text">Dirintis di Cianjur sebagai koran pertama yang dibiayai dan dikelola penuh oleh pribumi tanpa campur tangan modal kolonial.</p>
+        <div class="grid-3">
+          <article class="step-box reveal">
+            <span class="kicker">01 // 1903</span>
+            <h3>Soenda Berita</h3>
+            <p>Dirintis di Cianjur sebagai surat kabar pertama yang dibiayai dan dikelola mandiri oleh pribumi tanpa modal Eropa.</p>
           </article>
-          <article class="ritual-card stagger-card">
-            <span class="ritual-num">02 // 1907 &mdash; MEDAN PRIJAJI</span>
-            <h3 class="ritual-title">Advokasi &amp; Kritik</h3>
-            <p class="ritual-text">Membuka rubrik konsultasi hukum gratis dan berani membongkar penyalahgunaan wewenang pejabat kolonial secara terbuka.</p>
+          <article class="step-box reveal">
+            <span class="kicker">02 // 1907</span>
+            <h3>Medan Prijaji</h3>
+            <p>Membuka rubrik konsultasi hukum gratis dan berani membongkar penyalahgunaan wewenang secara terbuka.</p>
           </article>
-          <article class="ritual-card stagger-card">
-            <span class="ritual-num">03 // 1912 &mdash; WARISAN</span>
-            <h3 class="ritual-title">Api Kebangkitan</h3>
-            <p class="ritual-text">Meski dibredel lewat <em>Persbreidel</em>, tradisi jurnalistiknya melahirkan generasi pers pergerakan nasional di seluruh Nusantara.</p>
+          <article class="step-box reveal">
+            <span class="kicker">03 // 1912</span>
+            <h3>Warisan Pers</h3>
+            <p>Meski dibredel melalui <em>Persbreidel</em>, tradisi jurnalistiknya menyalakan pers pergerakan di seluruh Nusantara.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="archive-section" id="act-4">
-      <div class="section-inner">
-        <span class="eyebrow reveal-block">Babak IV &mdash; Dokumentasi &amp; Kajian</span>
-        <h2 class="hero-title reveal-block">Arsip Tulisan</h2>
-        <div class="archive-table">
-          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-row stagger-card">
-            <span class="row-date">Kajian I &bull; Sejarah Pers</span>
-            <h3 class="row-title">R.M. Tirto Adhi Soerjo: Sang Pemula dan Bapak Pers Nasional</h3>
-            <span class="row-badge">Baca Tulisan</span>
+    <!-- BABAK 4 -->
+    <section class="panel" id="babak-4">
+      <div class="panel-inner">
+        <span class="kicker reveal">Dokumentasi &amp; Kajian</span>
+        <h2 class="heading reveal">Arsip Tulisan</h2>
+        <div class="archive-list">
+          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-link reveal">
+            <h4>R.M. Tirto Adhi Soerjo: Sang Pemula dan Bapak Pers Nasional</h4>
+            <span>Kajian I &rarr;</span>
           </a>
-          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-row stagger-card">
-            <span class="row-date">Kajian II &bull; Analisis Wacana</span>
-            <h3 class="row-title">Bahasa Perlawanan dan Rubrik Hukum dalam Medan Prijaji</h3>
-            <span class="row-badge">Baca Tulisan</span>
+          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-link reveal">
+            <h4>Bahasa Perlawanan dan Rubrik Hukum dalam Medan Prijaji</h4>
+            <span>Kajian II &rarr;</span>
           </a>
-          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-row stagger-card">
-            <span class="row-date">Kajian III &bull; Regulasi Media</span>
-            <h3 class="row-title">Persbreidel Ordonnantie: Cara Kolonial Membungkam Tinta Pribumi</h3>
-            <span class="row-badge">Baca Tulisan</span>
+          <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener" class="archive-link reveal">
+            <h4>Persbreidel Ordonnantie: Cara Kolonial Membungkam Tinta Pribumi</h4>
+            <span>Kajian III &rarr;</span>
           </a>
         </div>
       </div>
@@ -508,327 +371,137 @@
   </main>
 
   <footer>
-    <span>&copy; 2026 Kronik Pers Indonesia &bull; Difa Moch Fadillah</span>
+    <span>&copy; 2026 Kronik Pers Indonesia</span>
     <a href="https://baladuniga.wordpress.com" target="_blank" rel="noopener">Kunjungi Blog Utama &rarr;</a>
   </footer>
 
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // =========================================================
-    // 1. THREE.JS: GLSL INK SHADER + MESIN KETIK 3D + PARTIKEL EMAS
-    // =========================================================
-    const canvas = document.getElementById("webgl-stage");
+    // 1. SETUP KANVAS THREE.JS
+    const canvas = document.getElementById("webgl-canvas");
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050404, 0.048);
+    scene.fog = new THREE.FogExp2(0x060505, 0.06);
 
-    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 1.8, 9.2);
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 7.5);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.45;
+    renderer.toneMappingExposure = 1.3;
 
-    const inkUniforms = {
-      uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) }
-    };
+    // Pencahayaan Studio Dramatis
+    scene.add(new THREE.AmbientLight(0x2a2218, 1.4));
 
-    const inkShaderMat = new THREE.ShaderMaterial({
-      uniforms: inkUniforms,
-      depthWrite: false,
-      vertexShader: `
-        varying vec2 vUv;
-        void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform float uTime;
-        uniform vec2 uMouse;
-        varying vec2 vUv;
+    const spotLight = new THREE.SpotLight(0xd4a359, 1.8, 30, Math.PI / 4, 0.6, 1);
+    spotLight.position.set(4, 5, 6);
+    scene.add(spotLight);
 
-        float hash(vec2 p) {
-          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-        }
-        float noise(vec2 p) {
-          vec2 i = floor(p);
-          vec2 f = fract(p);
-          vec2 u = f * f * (3.0 - 2.0 * f);
-          return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
-                     mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-        }
-        float fbm(vec2 p) {
-          float v = 0.0;
-          float a = 0.5;
-          for (int i = 0; i < 4; i++) {
-            v += a * noise(p);
-            p *= 2.02;
-            a *= 0.5;
-          }
-          return v;
-        }
+    const rimLight = new THREE.PointLight(0x9e2a2b, 1.5, 16);
+    rimLight.position.set(-4, -3, 3);
+    scene.add(rimLight);
 
-        void main() {
-          vec2 uv = vUv;
-          float distMouse = distance(uv, uMouse);
-          vec2 flow = uv * 2.8 + vec2(uTime * 0.06, -uTime * 0.05);
-          float n1 = fbm(flow + fbm(flow + uTime * 0.07));
-          float glow = smoothstep(0.65, 0.0, distMouse) * 0.28;
-
-          vec3 voidCol = vec3(0.02, 0.016, 0.015);
-          vec3 amberInk = vec3(0.28, 0.19, 0.08);
-          vec3 crimsonMist = vec3(0.18, 0.04, 0.03);
-
-          vec3 col = mix(voidCol, amberInk, smoothstep(0.3, 0.85, n1) * 0.75);
-          col = mix(col, crimsonMist, smoothstep(0.55, 0.95, n1) * 0.4);
-          col += vec3(0.83, 0.64, 0.35) * glow * n1;
-
-          gl_FragColor = vec4(col, 1.0);
-        }
-      `
-    });
-
-    const bgPlane = new THREE.Mesh(new THREE.PlaneGeometry(36, 22), inkShaderMat);
-    bgPlane.position.z = -9;
-    scene.add(bgPlane);
-
-    const ambientLight = new THREE.AmbientLight(0x221d17, 1.6);
-    scene.add(ambientLight);
-
-    // Lampu sorot sudah langsung menyala hangat bahkan saat di Gerbang Pembuka
-    const spotGold = new THREE.SpotLight(0xffcf87, 2.4, 32, Math.PI / 4, 0.5, 1);
-    spotGold.position.set(3.8, 6.2, 5.2);
-    scene.add(spotGold);
-
-    const rimCrimson = new THREE.PointLight(0xb83b2b, 2.4, 18);
-    rimCrimson.position.set(-4.5, 2, -2);
-    scene.add(rimCrimson);
-
-    const frontFill = new THREE.DirectionalLight(0xf2ece1, 0.9);
-    frontFill.position.set(0, 2, 6);
-    scene.add(frontFill);
-
-    const castIronMat = new THREE.MeshStandardMaterial({ color: 0x161514, metalness: 0.78, roughness: 0.28 });
-    const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4a359, metalness: 0.88, roughness: 0.22 });
-    const chromeMat = new THREE.MeshStandardMaterial({ color: 0xd8d8d8, metalness: 0.92, roughness: 0.15 });
-    const rubberMat = new THREE.MeshStandardMaterial({ color: 0x1c1c1e, metalness: 0.1, roughness: 0.75 });
-
-    function createPaperSheetTexture() {
+    // 2. TEKSTUR HALAMAN DEPAN KORAN 3D
+    function createNewspaperTexture() {
       const c = document.createElement("canvas");
-      c.width = 512; c.height = 512;
+      c.width = 1024;
+      c.height = 1440;
       const ctx = c.getContext("2d");
-      ctx.fillStyle = "#e6dcc8";
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.strokeStyle = "#1a1714";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(24, 24, 464, 464);
 
-      ctx.fillStyle = "#1a1714";
-      ctx.font = "bold 36px Georgia, serif";
+      ctx.fillStyle = "#dfd2bc";
+      ctx.fillRect(0, 0, 1024, 1440);
+
+      ctx.strokeStyle = "#181512";
+      ctx.lineWidth = 6;
+      ctx.strokeRect(42, 42, 940, 1356);
+
+      ctx.fillStyle = "#181512";
+      ctx.font = "bold 72px Georgia, serif";
       ctx.textAlign = "center";
-      ctx.fillText("MEDAN PRIJAJI", 256, 85);
+      ctx.fillText("MEDAN PRIJAJI", 512, 150);
 
-      ctx.font = "14px Courier New, monospace";
-      ctx.fillText("BANDOENG • 1907 • R.M. TIRTO ADHI SOERJO", 256, 115);
+      ctx.font = "22px Courier New, monospace";
+      ctx.fillText("TAHOEN KE-I  •  BANDOENG 1907  •  NO. 1", 512, 195);
 
-      ctx.fillStyle = "rgba(26, 23, 20, 0.75)";
-      for (let i = 0; i < 14; i++) {
-        ctx.fillRect(52, 150 + i * 22, (i === 13 ? 240 : 408), 6);
+      ctx.beginPath();
+      ctx.moveTo(72, 220);
+      ctx.lineTo(952, 220);
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.font = "italic 25px Georgia, serif";
+      ctx.fillText("“Soeara bagi sekalian anak negeri jang tertindas”", 512, 260);
+
+      // Kolom Cetak Klasik
+      ctx.fillStyle = "rgba(24, 21, 18, 0.78)";
+      for (let col = 0; col < 3; col++) {
+        const x = 84 + col * 295;
+        ctx.fillRect(x, 315, 250, 16);
+        for (let row = 0; row < 45; row++) {
+          const y = 355 + row * 22;
+          const w = (row % 7 === 6) ? 150 : 265;
+          ctx.fillRect(x, y, w, 7);
+        }
       }
-      return new THREE.CanvasTexture(c);
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 8;
+      return tex;
     }
 
-    const typewriter = new THREE.Group();
+    // 3. OBJEK PUSAT 3D (PELAT ARSIP MELENGKUNG + PARTIKEL EMAS)
+    const artifactGroup = new THREE.Group();
+    artifactGroup.position.set(1.65, 0, 0);
 
-    const basePlate = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.28, 2.5), castIronMat);
-    basePlate.position.y = -0.6;
-    typewriter.add(basePlate);
-
-    const lowerBody = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.45, 1.9), castIronMat);
-    lowerBody.position.set(0, -0.3, -0.15);
-    typewriter.add(lowerBody);
-
-    const upperTurret = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.15, 0.55, 32), castIronMat);
-    upperTurret.position.set(0, 0.12, -0.2);
-    typewriter.add(upperTurret);
-
-    const basketRing = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.045, 16, 48, Math.PI), brassMat);
-    basketRing.position.set(0, 0.25, 0.15);
-    basketRing.rotation.x = -0.35;
-    typewriter.add(basketRing);
-
-    const typeBars = [];
-    for (let i = -7; i <= 7; i++) {
-      const angle = i * 0.14;
-      const bar = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.45, 0.025), chromeMat);
-      bar.position.set(Math.sin(angle) * 0.52, 0.22, 0.22 - Math.cos(angle) * 0.25);
-      bar.rotation.z = -angle;
-      bar.rotation.x = 0.4;
-      typewriter.add(bar);
-      typeBars.push(bar);
+    const plateGeo = new THREE.BoxGeometry(2.7, 3.8, 0.08, 24, 24, 1);
+    const pos = plateGeo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const vx = pos.getX(i);
+      pos.setZ(i, pos.getZ(i) + Math.cos(vx * 0.85) * 0.16);
     }
+    plateGeo.computeVertexNormals();
 
-    const carriageGroup = new THREE.Group();
-    carriageGroup.position.set(0, 0.58, -0.38);
+    const brassEdge = new THREE.MeshStandardMaterial({ color: 0x9c7a3c, metalness: 0.8, roughness: 0.25 });
+    const paperFace = new THREE.MeshStandardMaterial({ map: createNewspaperTexture(), roughness: 0.6, metalness: 0.1 });
 
-    const platen = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 3.1, 32), rubberMat);
-    platen.rotation.z = Math.PI / 2;
-    carriageGroup.add(platen);
+    const frontPlate = new THREE.Mesh(plateGeo, [brassEdge, brassEdge, brassEdge, brassEdge, paperFace, paperFace]);
+    frontPlate.rotation.set(0.08, -0.45, -0.04);
+    artifactGroup.add(frontPlate);
 
-    const leftKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.16, 24), brassMat);
-    leftKnob.rotation.z = Math.PI / 2;
-    leftKnob.position.x = -1.68;
-    carriageGroup.add(leftKnob);
+    // Silinder Penggulung Kuningan di Belakang
+    const rollerGeo = new THREE.CylinderGeometry(0.16, 0.16, 4.2, 32);
+    const roller = new THREE.Mesh(rollerGeo, brassEdge);
+    roller.position.set(0, 0, -0.35);
+    artifactGroup.add(roller);
 
-    const rightKnob = leftKnob.clone();
-    rightKnob.position.x = 1.68;
-    carriageGroup.add(rightKnob);
+    scene.add(artifactGroup);
 
-    const paperBail = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 3.0, 16), chromeMat);
-    paperBail.rotation.z = Math.PI / 2;
-    paperBail.position.set(0, 0.18, 0.18);
-    carriageGroup.add(paperBail);
+    // Partikel Debu Cahaya Emas
+    const pCount = 300;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount * 3; i++) pPos[i] = (Math.random() - 0.5) * 16;
+    pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+    const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xd4a359, size: 0.032, transparent: true, opacity: 0.6 }));
+    scene.add(particles);
 
-    const paperGeo = new THREE.PlaneGeometry(1.85, 1.9, 20, 20);
-    const pAttr = paperGeo.attributes.position;
-    for (let i = 0; i < pAttr.count; i++) {
-      const py = pAttr.getY(i);
-      if (py < 0) pAttr.setZ(i, Math.sin(py * 1.6) * 0.22);
-      else pAttr.setZ(i, -py * 0.18);
-    }
-    paperGeo.computeVertexNormals();
-    const paperSheet = new THREE.Mesh(paperGeo, new THREE.MeshStandardMaterial({
-      map: createPaperSheetTexture(), side: THREE.DoubleSide, roughness: 0.75
-    }));
-    paperSheet.position.set(0, 0.85, -0.05);
-    paperSheet.rotation.x = -0.18;
-    carriageGroup.add(paperSheet);
-    typewriter.add(carriageGroup);
-
-    const keys = [];
-    for (let row = 0; row < 4; row++) {
-      const count = 10 - (row % 2);
-      for (let col = 0; col < count; col++) {
-        const keyGroup = new THREE.Group();
-        const xPos = (col - (count - 1) / 2) * 0.22;
-        const yPos = -0.42 + row * 0.09;
-        const zPos = 1.05 - row * 0.2;
-
-        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.16, 8), chromeMat);
-        const capRing = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.035, 20), brassMat);
-        capRing.position.y = 0.08;
-        const capTop = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.062, 0.038, 20), castIronMat);
-        capTop.position.y = 0.082;
-
-        keyGroup.add(stem, capRing, capTop);
-        keyGroup.position.set(xPos, yPos, zPos);
-        typewriter.add(keyGroup);
-        keys.push({ group: keyGroup, baseY: yPos });
-      }
-    }
-
-    const spacebar = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 0.12), brassMat);
-    spacebar.position.set(0, -0.46, 1.24);
-    typewriter.add(spacebar);
-
-    typewriter.position.set(0, -0.2, 0);
-    typewriter.rotation.set(0.18, -0.35, 0);
-    scene.add(typewriter);
-
-    const sparkCount = 450;
-    const sparkGeo = new THREE.BufferGeometry();
-    const sparkPos = new Float32Array(sparkCount * 3);
-    const sparkVel = [];
-    for (let i = 0; i < sparkCount; i++) {
-      sparkPos[i * 3] = (Math.random() - 0.5) * 14;
-      sparkPos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      sparkPos[i * 3 + 2] = (Math.random() - 0.5) * 10;
-      sparkVel.push(0.003 + Math.random() * 0.007);
-    }
-    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
-    const sparks = new THREE.Points(sparkGeo, new THREE.PointsMaterial({
-      color: 0xffd289, size: 0.04, transparent: true, opacity: 0.78
-    }));
-    scene.add(sparks);
-
-    let audioCtx = null, osc = null, playing = false;
-    const soundBtn = document.getElementById("soundToggle");
-
-    function playTypewriterClick() {
-      if (!playing || !audioCtx) return;
-      const now = audioCtx.currentTime;
-      const clickOsc = audioCtx.createOscillator();
-      const clickGain = audioCtx.createGain();
-      clickOsc.type = "triangle";
-      clickOsc.frequency.setValueAtTime(140 + Math.random() * 80, now);
-      clickOsc.frequency.exponentialRampToValueAtTime(40, now + 0.035);
-      clickGain.gain.setValueAtTime(0.035, now);
-      clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-      clickOsc.connect(clickGain);
-      clickGain.connect(audioCtx.destination);
-      clickOsc.start(now);
-      clickOsc.stop(now + 0.04);
-    }
-
-    function toggleSound(force = false) {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (playing && !force) {
-        if (osc) { osc.stop(); osc = null; }
-        playing = false; soundBtn.textContent = "Audio: Off";
-      } else if (!playing) {
-        osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine"; osc.frequency.setValueAtTime(55, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); playing = true; soundBtn.textContent = "Audio: On";
-      }
-    }
-    soundBtn.addEventListener("click", () => toggleSound(false));
-
+    // 4. INTERAKSI KURSOR & RENDER LOOP
     let mouseX = 0, mouseY = 0;
     window.addEventListener("mousemove", (e) => {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-      inkUniforms.uMouse.value.set(e.clientX / window.innerWidth, 1.0 - e.clientY / window.innerHeight);
     });
 
     const clock = new THREE.Clock();
-    let lastTypeTime = 0;
-    let carriageDir = 1;
-
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
-      inkUniforms.uTime.value = t;
-
-      if (t - lastTypeTime > 0.22) {
-        lastTypeTime = t;
-        const randKey = keys[Math.floor(Math.random() * keys.length)];
-        gsap.to(randKey.group.position, { y: randKey.baseY - 0.045, duration: 0.06, yoyo: true, repeat: 1 });
-        const randBar = typeBars[Math.floor(Math.random() * typeBars.length)];
-        gsap.to(randBar.rotation, { x: -0.65, duration: 0.07, yoyo: true, repeat: 1 });
-
-        carriageGroup.position.x += 0.025 * carriageDir;
-        if (Math.abs(carriageGroup.position.x) > 0.35) carriageDir *= -1;
-        playTypewriterClick();
-      }
-
-      typewriter.position.y = -0.15 + Math.sin(t * 0.9) * 0.07;
-      const posArr = sparkGeo.attributes.position.array;
-      for (let i = 0; i < sparkCount; i++) {
-        posArr[i * 3 + 1] += sparkVel[i];
-        if (posArr[i * 3 + 1] > 5) posArr[i * 3 + 1] = -5;
-      }
-      sparkGeo.attributes.position.needsUpdate = true;
-
-      camera.position.x += (mouseX * 0.45 - camera.position.x) * 0.05;
-      camera.lookAt(0, 0.1, 0);
-
+      artifactGroup.position.y = Math.sin(t * 0.9) * 0.1;
+      frontPlate.rotation.z = -0.04 + Math.sin(t * 0.6) * 0.02 + mouseX * 0.06;
+      frontPlate.rotation.x = 0.08 + mouseY * 0.06;
+      particles.rotation.y = t * 0.03;
       renderer.render(scene, camera);
     }
     animate();
@@ -839,132 +512,70 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    function playHeroEntrance() {
-      // Geser mesin ketik ke kanan untuk memberi ruang teks Home di kiri
-      gsap.to(typewriter.position, {
-        x: 1.55,
-        duration: 1.8,
-        ease: "power3.out"
-      });
-      gsap.to(typewriter.rotation, {
-        y: -0.58,
-        duration: 1.8,
-        ease: "power3.out"
-      });
-      gsap.to(camera.position, {
-        y: 1.35,
-        z: 7.0,
-        duration: 2.0,
-        ease: "power3.out"
-      });
-      gsap.to(spotGold, {
-        intensity: 3.8,
-        duration: 1.6
-      });
-      gsap.to(".line-inner", {
-        y: "0%",
-        duration: 1.15,
-        stagger: 0.14,
-        delay: 0.3,
-        ease: "power4.out"
-      });
-      gsap.to("#heroRule", {
-        width: "140px",
-        duration: 1.0,
-        delay: 0.7,
-        ease: "power3.out"
-      });
-      gsap.fromTo(".hero-fade",
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 1.0, stagger: 0.2, delay: 0.55, ease: "power3.out" }
-      );
-      gsap.to("#scrollPrompt", {
-        opacity: 1,
-        duration: 1.0,
-        delay: 1.3
-      });
+    // 5. KOREOGRAFI SCROLL-SCRUBBING (GSAP SCROLLTRIGGER)
+    // Babak 1 -> Babak 2: Objek bergerak ke tengah & lampu sorot terang
+    gsap.to(artifactGroup.position, {
+      x: 0, z: 1.2,
+      scrollTrigger: { trigger: "#babak-2", start: "top bottom", end: "center center", scrub: 1.2 }
+    });
+    gsap.to(frontPlate.rotation, {
+      y: 0.05,
+      scrollTrigger: { trigger: "#babak-2", start: "top bottom", end: "center center", scrub: 1.2 }
+    });
+    gsap.to(spotLight, {
+      intensity: 3.4,
+      scrollTrigger: { trigger: "#babak-2", start: "top 80%", end: "center center", scrub: true }
+    });
 
-      const phrases = [
-        "EDISI I // BANDOENG, JANUARI 1907...",
-        "SOEARA BAGI SEKALIAN ANAK NEGERI...",
-        "R.M. TIRTO ADHI SOERJO — PEMIMPIN REDAKSI..."
-      ];
-      let pIdx = 0, charIdx = 0, isDeleting = false;
-      const typeTarget = document.getElementById("liveTypeText");
+    // Babak 2 -> Babak 3: Objek bergeser ke kiri & berputar 360 derajat
+    gsap.to(artifactGroup.position, {
+      x: -1.75, z: 0.3,
+      scrollTrigger: { trigger: "#babak-3", start: "top bottom", end: "center center", scrub: 1.2 }
+    });
+    gsap.to(frontPlate.rotation, {
+      y: Math.PI * 2 - 0.3,
+      scrollTrigger: { trigger: "#babak-3", start: "top bottom", end: "bottom top", scrub: 1.5 }
+    });
 
-      function tickTypewriter() {
-        const current = phrases[pIdx];
-        if (!isDeleting) {
-          typeTarget.textContent = current.substring(0, charIdx + 1);
-          charIdx++;
-          if (charIdx === current.length) {
-            isDeleting = true;
-            setTimeout(tickTypewriter, 2000);
-            return;
-          }
-        } else {
-          typeTarget.textContent = current.substring(0, charIdx - 1);
-          charIdx--;
-          if (charIdx === 0) {
-            isDeleting = false;
-            pIdx = (pIdx + 1) % phrases.length;
-          }
-        }
-        setTimeout(tickTypewriter, isDeleting ? 35 : 65);
+    // Babak 4: Objek menjauh & meredup agar daftar arsip tajam terbaca
+    gsap.to(artifactGroup.position, {
+      x: 0, z: -2.8,
+      scrollTrigger: { trigger: "#babak-4", start: "top bottom", end: "top 30%", scrub: 1 }
+    });
+    gsap.to(spotLight, {
+      intensity: 0.5,
+      scrollTrigger: { trigger: "#babak-4", start: "top 80%", end: "top 30%", scrub: true }
+    });
+
+    // Animasi Muncul Teks
+    gsap.utils.toArray(".reveal").forEach((el) => {
+      gsap.fromTo(el, { opacity: 0, y: 40 }, {
+        opacity: 1, y: 0, duration: 1, ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }
+      });
+    });
+
+    // 6. AUDIO AMBIEN (WEB AUDIO API)
+    let audioCtx = null, osc = null, playing = false;
+    const audioBtn = document.getElementById("audioBtn");
+    audioBtn.addEventListener("click", () => {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (playing) {
+        osc.stop(); osc = null; playing = false;
+        audioBtn.textContent = "Audio: Off";
+      } else {
+        osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(55, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        playing = true;
+        audioBtn.textContent = "Audio: On";
       }
-      setTimeout(tickTypewriter, 850);
-    }
-
-    function initScrollAnimations() {
-      gsap.to(typewriter.position, {
-        x: 0, z: 1.6,
-        scrollTrigger: { trigger: "#act-2", start: "top bottom", end: "center center", scrub: 1.2 }
-      });
-      gsap.to(typewriter.rotation, {
-        y: 0.08, x: 0.22,
-        scrollTrigger: { trigger: "#act-2", start: "top bottom", end: "center center", scrub: 1.2 }
-      });
-      gsap.to(typewriter.position, {
-        x: -1.65, z: 0.5,
-        scrollTrigger: { trigger: "#act-3", start: "top bottom", end: "center center", scrub: 1.2 }
-      });
-      gsap.to(typewriter.rotation, {
-        y: Math.PI * 2 - 0.45,
-        scrollTrigger: { trigger: "#act-3", start: "top bottom", end: "bottom top", scrub: 1.5 }
-      });
-      gsap.to(typewriter.position, {
-        x: 0, z: -3.2,
-        scrollTrigger: { trigger: "#act-4", start: "top bottom", end: "top 25%", scrub: 1 }
-      });
-      gsap.to(spotGold, {
-        intensity: 0.65,
-        scrollTrigger: { trigger: "#act-4", start: "top 80%", end: "top 30%", scrub: true }
-      });
-
-      gsap.utils.toArray(".reveal-block").forEach((el) => {
-        gsap.fromTo(el, { opacity: 0, y: 45 }, {
-          opacity: 1, y: 0, duration: 1.1, ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" }
-        });
-      });
-
-      gsap.utils.toArray(".ritual-steps, .archive-table").forEach((wrap) => {
-        gsap.fromTo(wrap.querySelectorAll(".stagger-card"), { opacity: 0, y: 35 }, {
-          opacity: 1, y: 0, duration: 0.9, stagger: 0.16, ease: "power2.out",
-          scrollTrigger: { trigger: wrap, start: "top 82%" }
-        });
-      });
-    }
-
-    const gate = document.getElementById("editorialGate");
-    function enter(withAudio) {
-      gate.classList.add("is-unlocked");
-      if (withAudio) toggleSound(true);
-      playHeroEntrance();
-      initScrollAnimations();
-    }
-    document.getElementById("btnStartAudio").addEventListener("click", () => enter(true));
-    document.getElementById("btnStartSilent").addEventListener("click", () => enter(false));
+    });
   </script>
 </body>
 </html>
