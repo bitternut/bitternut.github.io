@@ -17,10 +17,10 @@
     :root {
       --bg-void: #050404;
       --text-cream: #f2ece1;
-      --text-dim: #8c8273;
+      --text-dim: #9a8f80;
       --gold-ink: #d4a359;
       --crimson-stamp: #9e2a2b;
-      --border-glass: rgba(242, 236, 225, 0.14);
+      --border-glass: rgba(242, 236, 225, 0.16);
       --font-serif: 'Newsreader', Georgia, serif;
       --font-mono: 'Courier Prime', monospace;
       --font-sans: 'Plus Jakarta Sans', sans-serif;
@@ -50,7 +50,7 @@
       inset: 0;
       z-index: 2;
       pointer-events: none;
-      background: radial-gradient(circle at center, transparent 30%, rgba(5, 4, 4, 0.9) 100%);
+      background: radial-gradient(circle at center, transparent 35%, rgba(5, 4, 4, 0.85) 100%);
     }
 
     .film-grain {
@@ -140,23 +140,39 @@
       background: none; border: none; color: var(--text-cream);
       text-decoration: none; font-family: var(--font-mono);
       font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase;
-      cursor: pointer; opacity: 0.7; transition: opacity 0.3s;
+      cursor: pointer; opacity: 0.75; transition: opacity 0.3s;
     }
     .nav-menu a:hover, .sound-toggle:hover { opacity: 1; }
 
-    /* 3. SECTIONS */
+    /* 3. HOME / HERO SECTION DENGAN ANIMASI MASUK AKTIF */
     main { position: relative; z-index: 10; }
     .story-section {
-      min-height: 125vh;
+      min-height: 120vh;
       padding: 8rem 9%;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      position: relative;
     }
-    .section-inner { max-width: 1120px; margin: 0 auto; width: 100%; }
-    .split-left { max-width: 520px; }
-    .split-right { max-width: 520px; margin-left: auto; }
+    .hero-home {
+      min-height: 100vh;
+      padding-top: 7rem;
+      padding-bottom: 5rem;
+    }
+    .section-inner { max-width: 1140px; margin: 0 auto; width: 100%; }
+    .split-left { max-width: 550px; }
+    .split-right { max-width: 530px; margin-left: auto; }
     .center-stage { text-align: center; max-width: 780px; margin: 0 auto; }
+
+    /* Masking Baris Judul Home agar muncul bergelombang */
+    .line-mask {
+      overflow: hidden;
+      display: block;
+    }
+    .line-inner {
+      display: block;
+      transform: translateY(110%);
+    }
 
     .eyebrow {
       font-family: var(--font-mono);
@@ -169,19 +185,89 @@
     }
     .hero-title {
       font-family: var(--font-serif);
-      font-size: clamp(2.5rem, 5.5vw, 4.9rem);
+      font-size: clamp(2.6rem, 5.6vw, 5.1rem);
       font-weight: 300;
       line-height: 1.08;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.5rem;
     }
     .hero-title em { font-style: italic; color: var(--gold-ink); }
+
+    /* Garis Pemisah Emas Animasi di Home */
+    .hero-gold-rule {
+      width: 0px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-ink), transparent);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Live Typewriter Ticker di Home */
+    .typewriter-bar {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--gold-ink);
+      margin-bottom: 1.25rem;
+      min-height: 1.4em;
+      letter-spacing: 0.04em;
+    }
+    .typewriter-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1em;
+      background-color: var(--gold-ink);
+      vertical-align: middle;
+      margin-left: 4px;
+      animation: blinkCursor 0.75s infinite;
+    }
+    @keyframes blinkCursor {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
     .body-copy {
-      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      font-size: clamp(1rem, 1.45vw, 1.18rem);
       color: var(--text-dim);
       font-weight: 300;
       line-height: 1.85;
     }
 
+    /* Scroll Indicator Animasi di Bawah Layar Home */
+    .scroll-prompt {
+      position: absolute;
+      bottom: 2.2rem;
+      left: 9%;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      opacity: 0;
+    }
+    .scroll-line-track {
+      width: 48px;
+      height: 1px;
+      background: rgba(242, 236, 225, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-line-pulse {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--gold-ink);
+      animation: pulseSlide 2.2s infinite cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    @keyframes pulseSlide {
+      0% { left: -100%; }
+      50% { left: 0%; }
+      100% { left: 100%; }
+    }
+    .scroll-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* BABAK II, III, IV */
     .manifesto-card {
       margin-top: 2.5rem;
       padding: 2.75rem;
@@ -303,18 +389,31 @@
   </header>
 
   <main>
-    <section class="story-section" id="act-1">
+    <!-- BABAK I / HOME DENGAN ANIMASI MASUK PENUH -->
+    <section class="story-section hero-home" id="act-1">
       <div class="section-inner">
-        <div class="split-left reveal-block">
-          <span class="eyebrow">Babak I &mdash; Penghujung Abad ke-19</span>
-          <h2 class="hero-title">Suara yang terbungkam di <em>tanah sendiri.</em></h2>
-          <p class="body-copy">
+        <div class="split-left">
+          <span class="eyebrow hero-fade">Babak I &mdash; Penghujung Abad ke-19</span>
+          <h2 class="hero-title">
+            <span class="line-mask"><span class="line-inner">Suara yang</span></span>
+            <span class="line-mask"><span class="line-inner">terbungkam di</span></span>
+            <span class="line-mask"><span class="line-inner"><em>tanah sendiri.</em></span></span>
+          </h2>
+          <div class="hero-gold-rule" id="heroRule"></div>
+          <div class="typewriter-bar"><span id="liveTypeText"></span><span class="typewriter-cursor"></span></div>
+          <p class="body-copy hero-fade">
             Di bawah bayang-bayang kolonial Hindia Belanda, mesin cetak dikuasai pemodal Eropa. Kaum bumiputra sekadar menjadi objek berita—tanpa panggung, tanpa hak jawab, dan tanpa pembelaan hukum.
           </p>
         </div>
       </div>
+
+      <div class="scroll-prompt" id="scrollPrompt">
+        <div class="scroll-line-track"><div class="scroll-line-pulse"></div></div>
+        <span class="scroll-label">Gulir untuk membuka arsip</span>
+      </div>
     </section>
 
+    <!-- BABAK II -->
     <section class="story-section" id="act-2">
       <div class="section-inner">
         <div class="center-stage reveal-block">
@@ -331,6 +430,7 @@
       </div>
     </section>
 
+    <!-- BABAK III -->
     <section class="story-section" id="act-3">
       <div class="section-inner">
         <div class="split-right reveal-block">
@@ -361,6 +461,7 @@
       </div>
     </section>
 
+    <!-- BABAK IV -->
     <section class="archive-section" id="act-4">
       <div class="section-inner">
         <span class="eyebrow reveal-block">Babak IV &mdash; Dokumentasi &amp; Kajian</span>
@@ -395,64 +496,111 @@
     gsap.registerPlugin(ScrollTrigger);
 
     // =========================================================
-    // 1. THREE.JS: MODEL 3D MESIN KETIK REDAKSI KLASIK BERVOLUME
+    // 1. THREE.JS: GLSL INK SHADER + MESIN KETIK 3D + PARTIKEL EMAS
     // =========================================================
     const canvas = document.getElementById("webgl-stage");
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050404, 0.055);
+    scene.fog = new THREE.FogExp2(0x050404, 0.048);
 
+    // Posisi kamera awal jauh (untuk animasi dolly-in saat masuk ke Home)
     const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 1.4, 7.2);
-    camera.lookAt(0, 0.2, 0);
+    camera.position.set(0, 2.8, 12.5);
 
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4;
+    renderer.toneMappingExposure = 1.45;
 
-    // Pencahayaan Studio PBR (Menonjolkan Lekukan Logam & Kuningan)
-    const ambientLight = new THREE.AmbientLight(0x221d17, 1.8);
+    // A. LATAR BELAKANG CUSTOM GLSL SHADER (Kabut Tinta & Cahaya Emas Bergerak)
+    const inkUniforms = {
+      uTime: { value: 0 },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) }
+    };
+
+    const inkShaderMat = new THREE.ShaderMaterial({
+      uniforms: inkUniforms,
+      depthWrite: false,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform vec2 uMouse;
+        varying vec2 vUv;
+
+        // Fungsi noise organik untuk simulasi asap/tinta cair
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+                     mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+        }
+        float fbm(vec2 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 4; i++) {
+            v += a * noise(p);
+            p *= 2.02;
+            a *= 0.5;
+          }
+          return v;
+        }
+
+        void main() {
+          vec2 uv = vUv;
+          float distMouse = distance(uv, uMouse);
+          vec2 flow = uv * 2.8 + vec2(uTime * 0.05, -uTime * 0.04);
+          float n1 = fbm(flow + fbm(flow + uTime * 0.06));
+          float glow = smoothstep(0.65, 0.0, distMouse) * 0.22;
+
+          vec3 voidCol = vec3(0.02, 0.016, 0.015);
+          vec3 amberInk = vec3(0.24, 0.16, 0.07);
+          vec3 crimsonMist = vec3(0.16, 0.03, 0.03);
+
+          vec3 col = mix(voidCol, amberInk, smoothstep(0.32, 0.85, n1) * 0.65);
+          col = mix(col, crimsonMist, smoothstep(0.55, 0.95, n1) * 0.35);
+          col += vec3(0.83, 0.64, 0.35) * glow * n1;
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `
+    });
+
+    const bgPlane = new THREE.Mesh(new THREE.PlaneGeometry(36, 22), inkShaderMat);
+    bgPlane.position.z = -9;
+    scene.add(bgPlane);
+
+    // B. PENCAHAYAAN STUDIO PBR
+    const ambientLight = new THREE.AmbientLight(0x221d17, 1.4);
     scene.add(ambientLight);
 
-    const spotGold = new THREE.SpotLight(0xffcf87, 3.2, 30, Math.PI / 4, 0.5, 1);
-    spotGold.position.set(4, 6, 5);
+    const spotGold = new THREE.SpotLight(0xffcf87, 0.2, 32, Math.PI / 4, 0.5, 1); // Akan menyala terang saat masuk Home
+    spotGold.position.set(3.8, 6.2, 5.2);
     scene.add(spotGold);
 
-    const rimCrimson = new THREE.PointLight(0xb83b2b, 2.2, 18);
+    const rimCrimson = new THREE.PointLight(0xb83b2b, 2.4, 18);
     rimCrimson.position.set(-4.5, 2, -2);
     scene.add(rimCrimson);
 
-    const frontFill = new THREE.DirectionalLight(0xf2ece1, 0.9);
+    const frontFill = new THREE.DirectionalLight(0xf2ece1, 0.85);
     frontFill.position.set(0, 2, 6);
     scene.add(frontFill);
 
-    // Material PBR (Besi Hitam Mengilap, Kuningan Antik, Krom, Kertas Koran)
-    const castIronMat = new THREE.MeshStandardMaterial({
-      color: 0x161514,
-      metalness: 0.78,
-      roughness: 0.28
-    });
+    // C. MATERIAL & MODEL 3D MESIN KETIK REDAKSI
+    const castIronMat = new THREE.MeshStandardMaterial({ color: 0x161514, metalness: 0.78, roughness: 0.28 });
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4a359, metalness: 0.88, roughness: 0.22 });
+    const chromeMat = new THREE.MeshStandardMaterial({ color: 0xd8d8d8, metalness: 0.92, roughness: 0.15 });
+    const rubberMat = new THREE.MeshStandardMaterial({ color: 0x1c1c1e, metalness: 0.1, roughness: 0.75 });
 
-    const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd4a359,
-      metalness: 0.88,
-      roughness: 0.22
-    });
-
-    const chromeMat = new THREE.MeshStandardMaterial({
-      color: 0xd8d8d8,
-      metalness: 0.92,
-      roughness: 0.15
-    });
-
-    const rubberMat = new THREE.MeshStandardMaterial({
-      color: 0x1c1c1e,
-      metalness: 0.1,
-      roughness: 0.75
-    });
-
-    // Tekstur Kertas Medan Prijaji di Atas Roller
     function createPaperSheetTexture() {
       const c = document.createElement("canvas");
       c.width = 512; c.height = 512;
@@ -478,10 +626,8 @@
       return new THREE.CanvasTexture(c);
     }
 
-    // Merakit Model 3D Mesin Ketik Klasik
     const typewriter = new THREE.Group();
 
-    // 1. Alas & Bodi Utama Besi Cor (Bertingkat)
     const basePlate = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.28, 2.5), castIronMat);
     basePlate.position.y = -0.6;
     typewriter.add(basePlate);
@@ -494,7 +640,6 @@
     upperTurret.position.set(0, 0.12, -0.2);
     typewriter.add(upperTurret);
 
-    // 2. Bingkai Lengkung Kuningan (Type Basket) & Batang Huruf
     const basketRing = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.045, 16, 48, Math.PI), brassMat);
     basketRing.position.set(0, 0.25, 0.15);
     basketRing.rotation.x = -0.35;
@@ -511,7 +656,6 @@
       typeBars.push(bar);
     }
 
-    // 3. Carriage & Platen (Silinder Penggulung Kertas)
     const carriageGroup = new THREE.Group();
     carriageGroup.position.set(0, 0.58, -0.38);
 
@@ -519,7 +663,6 @@
     platen.rotation.z = Math.PI / 2;
     carriageGroup.add(platen);
 
-    // Knob pemutar kanan-kiri berbahan kuningan
     const leftKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.16, 24), brassMat);
     leftKnob.rotation.z = Math.PI / 2;
     leftKnob.position.x = -1.68;
@@ -529,38 +672,27 @@
     rightKnob.position.x = 1.68;
     carriageGroup.add(rightKnob);
 
-    // Batang penahan kertas krom
     const paperBail = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 3.0, 16), chromeMat);
     paperBail.rotation.z = Math.PI / 2;
     paperBail.position.set(0, 0.18, 0.18);
     carriageGroup.add(paperBail);
 
-    // Lembaran Kertas Medan Prijaji terjepit melengkung di atas Platen
     const paperGeo = new THREE.PlaneGeometry(1.85, 1.9, 20, 20);
     const pAttr = paperGeo.attributes.position;
     for (let i = 0; i < pAttr.count; i++) {
       const py = pAttr.getY(i);
-      // Melengkung mengikuti silinder platen di bagian bawah
-      if (py < 0) {
-        pAttr.setZ(i, Math.sin(py * 1.6) * 0.22);
-      } else {
-        pAttr.setZ(i, -py * 0.18);
-      }
+      if (py < 0) pAttr.setZ(i, Math.sin(py * 1.6) * 0.22);
+      else pAttr.setZ(i, -py * 0.18);
     }
     paperGeo.computeVertexNormals();
-    const paperMat = new THREE.MeshStandardMaterial({
-      map: createPaperSheetTexture(),
-      side: THREE.DoubleSide,
-      roughness: 0.75
-    });
-    const paperSheet = new THREE.Mesh(paperGeo, paperMat);
+    const paperSheet = new THREE.Mesh(paperGeo, new THREE.MeshStandardMaterial({
+      map: createPaperSheetTexture(), side: THREE.DoubleSide, roughness: 0.75
+    }));
     paperSheet.position.set(0, 0.85, -0.05);
     paperSheet.rotation.x = -0.18;
     carriageGroup.add(paperSheet);
-
     typewriter.add(carriageGroup);
 
-    // 4. Empat Baris Tuts Mekanis Bulat (Kuningan & Krom)
     const keys = [];
     for (let row = 0; row < 4; row++) {
       const count = 10 - (row % 2);
@@ -583,49 +715,112 @@
       }
     }
 
-    // Spacebar panjang di depan
     const spacebar = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.04, 0.12), brassMat);
     spacebar.position.set(0, -0.46, 1.24);
     typewriter.add(spacebar);
 
-    // Posisi Awal Mesin Ketik di Kanan Layar (Babak I)
-    typewriter.position.set(1.55, -0.1, 0);
-    typewriter.rotation.set(0.12, -0.55, 0);
+    typewriter.position.set(1.55, -0.15, 0);
+    typewriter.rotation.set(0.15, -0.58, 0);
     scene.add(typewriter);
 
-    // Partikel Debu Cahaya
-    const dustGeo = new THREE.BufferGeometry();
-    const dustPos = new Float32Array(280 * 3);
-    for (let i = 0; i < 280 * 3; i++) dustPos[i] = (Math.random() - 0.5) * 15;
-    dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
-    const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xd4a359, size: 0.03, transparent: true, opacity: 0.5 }));
-    scene.add(dust);
+    // D. PARTIKEL PERCIKAN TINTA EMAS INTERAKTIF
+    const sparkCount = 420;
+    const sparkGeo = new THREE.BufferGeometry();
+    const sparkPos = new Float32Array(sparkCount * 3);
+    const sparkVel = [];
+    for (let i = 0; i < sparkCount; i++) {
+      sparkPos[i * 3] = (Math.random() - 0.5) * 14;
+      sparkPos[i * 3 + 1] = (Math.random() - 0.5) * 10;
+      sparkPos[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      sparkVel.push(0.002 + Math.random() * 0.006);
+    }
+    sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
+    const sparks = new THREE.Points(sparkGeo, new THREE.PointsMaterial({
+      color: 0xffd289, size: 0.038, transparent: true, opacity: 0.72
+    }));
+    scene.add(sparks);
 
-    // Animasi Idle: Tuts mengetik otomatis secara halus + Parallax Mouse
+    // =========================================================
+    // 2. AUDIO ENGINE: AMBIENT DRONE + SUARA KLIK MESIN KETIK
+    // =========================================================
+    let audioCtx = null, osc = null, playing = false;
+    const soundBtn = document.getElementById("soundToggle");
+
+    function playTypewriterClick() {
+      if (!playing || !audioCtx) return;
+      const now = audioCtx.currentTime;
+      const clickOsc = audioCtx.createOscillator();
+      const clickGain = audioCtx.createGain();
+      clickOsc.type = "triangle";
+      clickOsc.frequency.setValueAtTime(140 + Math.random() * 80, now);
+      clickOsc.frequency.exponentialRampToValueAtTime(40, now + 0.035);
+      clickGain.gain.setValueAtTime(0.035, now);
+      clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+      clickOsc.connect(clickGain);
+      clickGain.connect(audioCtx.destination);
+      clickOsc.start(now);
+      clickOsc.stop(now + 0.04);
+    }
+
+    function toggleSound(force = false) {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (playing && !force) {
+        if (osc) { osc.stop(); osc = null; }
+        playing = false; soundBtn.textContent = "Audio: Off";
+      } else if (!playing) {
+        osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine"; osc.frequency.setValueAtTime(55, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); playing = true; soundBtn.textContent = "Audio: On";
+      }
+    }
+    soundBtn.addEventListener("click", () => toggleSound(false));
+
+    // =========================================================
+    // 3. LOOP RENDER & ANIMASI REAL-TIME DI HOME
+    // =========================================================
     let mouseX = 0, mouseY = 0;
     window.addEventListener("mousemove", (e) => {
       mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
       mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      inkUniforms.uMouse.value.set(e.clientX / window.innerWidth, 1.0 - e.clientY / window.innerHeight);
     });
 
     const clock = new THREE.Clock();
     let lastTypeTime = 0;
+    let carriageDir = 1;
+
     function animate() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
+      inkUniforms.uTime.value = t;
 
-      // Simulasi ketikan tuts & hentakan batang huruf periodik
-      if (t - lastTypeTime > 0.35) {
+      // Ketikan mekanis cepat + pergerakan carriage bolak-balik
+      if (t - lastTypeTime > 0.22) {
         lastTypeTime = t;
         const randKey = keys[Math.floor(Math.random() * keys.length)];
-        gsap.to(randKey.group.position, { y: randKey.baseY - 0.04, duration: 0.08, yoyo: true, repeat: 1 });
+        gsap.to(randKey.group.position, { y: randKey.baseY - 0.045, duration: 0.06, yoyo: true, repeat: 1 });
         const randBar = typeBars[Math.floor(Math.random() * typeBars.length)];
-        gsap.to(randBar.rotation, { x: -0.6, duration: 0.09, yoyo: true, repeat: 1 });
+        gsap.to(randBar.rotation, { x: -0.65, duration: 0.07, yoyo: true, repeat: 1 });
+
+        // Geser carriage sedikit tiap ketikan
+        carriageGroup.position.x += 0.025 * carriageDir;
+        if (Math.abs(carriageGroup.position.x) > 0.35) carriageDir *= -1;
+        playTypewriterClick();
       }
 
-      typewriter.position.y = -0.1 + Math.sin(t * 0.8) * 0.06;
-      dust.rotation.y = t * 0.025;
-      camera.position.x += (mouseX * 0.35 - camera.position.x) * 0.05;
+      // Gerakan melayang organik & partikel naik
+      typewriter.position.y = -0.15 + Math.sin(t * 0.9) * 0.07;
+      const posArr = sparkGeo.attributes.position.array;
+      for (let i = 0; i < sparkCount; i++) {
+        posArr[i * 3 + 1] += sparkVel[i];
+        if (posArr[i * 3 + 1] > 5) posArr[i * 3 + 1] = -5;
+      }
+      sparkGeo.attributes.position.needsUpdate = true;
+
+      camera.position.x += (mouseX * 0.45 - camera.position.x) * 0.05;
       camera.lookAt(0, 0.1, 0);
 
       renderer.render(scene, camera);
@@ -639,25 +834,100 @@
     });
 
     // =========================================================
-    // 2. KOREOGRAFI KAMERA & OBJEK 3D BERBASIS SCROLL
+    // 4. ANIMASI ENTRANCE KHUSUS HOME (HERO CHOREOGRAPHY)
+    // =========================================================
+    function playHeroEntrance() {
+      // 1. Kamera Dolly-In Sinematik dari jauh ke posisi Home
+      gsap.to(camera.position, {
+        y: 1.35,
+        z: 7.0,
+        duration: 2.1,
+        ease: "power3.out"
+      });
+
+      // 2. Lampu Sorot Kuningan Menyala Dramatis
+      gsap.to(spotGold, {
+        intensity: 3.6,
+        duration: 1.8,
+        delay: 0.2,
+        ease: "power2.out"
+      });
+
+      // 3. Judul Utama Muncul per Baris (Mask Reveal)
+      gsap.to(".line-inner", {
+        y: "0%",
+        duration: 1.15,
+        stagger: 0.14,
+        delay: 0.35,
+        ease: "power4.out"
+      });
+
+      // 4. Garis Emas Memanjang & Teks Pendamping Fade-In
+      gsap.to("#heroRule", {
+        width: "140px",
+        duration: 1.0,
+        delay: 0.75,
+        ease: "power3.out"
+      });
+
+      gsap.fromTo(".hero-fade",
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 1.0, stagger: 0.2, delay: 0.6, ease: "power3.out" }
+      );
+
+      gsap.to("#scrollPrompt", {
+        opacity: 1,
+        duration: 1.0,
+        delay: 1.4
+      });
+
+      // 5. Live Typewriter Ticker di Home
+      const phrases = [
+        "EDISI I // BANDOENG, JANUARI 1907...",
+        "SOEARA BAGI SEKALIAN ANAK NEGERI...",
+        "R.M. TIRTO ADHI SOERJO — PEMIMPIN REDAKSI..."
+      ];
+      let pIdx = 0, charIdx = 0, isDeleting = false;
+      const typeTarget = document.getElementById("liveTypeText");
+
+      function tickTypewriter() {
+        const current = phrases[pIdx];
+        if (!isDeleting) {
+          typeTarget.textContent = current.substring(0, charIdx + 1);
+          charIdx++;
+          if (charIdx === current.length) {
+            isDeleting = true;
+            setTimeout(tickTypewriter, 2000);
+            return;
+          }
+        } else {
+          typeTarget.textContent = current.substring(0, charIdx - 1);
+          charIdx--;
+          if (charIdx === 0) {
+            isDeleting = false;
+            pIdx = (pIdx + 1) % phrases.length;
+          }
+        }
+        setTimeout(tickTypewriter, isDeleting ? 35 : 65);
+      }
+      setTimeout(tickTypewriter, 900);
+    }
+
+    // =========================================================
+    // 5. SCROLL ANIMATIONS (BABAK II - IV)
     // =========================================================
     function initScrollAnimations() {
-      // Babak I -> Babak II: Mesin ketik bergerak ke tengah & berputar menghadap kamera (zoom-in ke kertas Medan Prijaji)
       gsap.to(typewriter.position, {
-        x: 0,
-        z: 1.6,
+        x: 0, z: 1.6,
         scrollTrigger: { trigger: "#act-2", start: "top bottom", end: "center center", scrub: 1.2 }
       });
       gsap.to(typewriter.rotation, {
-        y: 0.08,
-        x: 0.22,
+        y: 0.08, x: 0.22,
         scrollTrigger: { trigger: "#act-2", start: "top bottom", end: "center center", scrub: 1.2 }
       });
 
-      // Babak II -> Babak III: Mesin ketik bergeser ke kiri & berputar 360° memamerkan detail logamnya
       gsap.to(typewriter.position, {
-        x: -1.65,
-        z: 0.5,
+        x: -1.65, z: 0.5,
         scrollTrigger: { trigger: "#act-3", start: "top bottom", end: "center center", scrub: 1.2 }
       });
       gsap.to(typewriter.rotation, {
@@ -665,18 +935,15 @@
         scrollTrigger: { trigger: "#act-3", start: "top bottom", end: "bottom top", scrub: 1.5 }
       });
 
-      // Babak IV: Mesin ketik mundur ke bayangan agar arsip mudah dibaca
       gsap.to(typewriter.position, {
-        x: 0,
-        z: -3.2,
+        x: 0, z: -3.2,
         scrollTrigger: { trigger: "#act-4", start: "top bottom", end: "top 25%", scrub: 1 }
       });
       gsap.to(spotGold, {
-        intensity: 0.6,
+        intensity: 0.65,
         scrollTrigger: { trigger: "#act-4", start: "top 80%", end: "top 30%", scrub: true }
       });
 
-      // Reveal teks
       gsap.utils.toArray(".reveal-block").forEach((el) => {
         gsap.fromTo(el, { opacity: 0, y: 45 }, {
           opacity: 1, y: 0, duration: 1.1, ease: "power3.out",
@@ -692,29 +959,12 @@
       });
     }
 
-    // 3. AUDIO & GATE
-    let audioCtx = null, osc = null, playing = false;
-    const soundBtn = document.getElementById("soundToggle");
-    function toggleSound(force = false) {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (playing && !force) {
-        if (osc) { osc.stop(); osc = null; }
-        playing = false; soundBtn.textContent = "Audio: Off";
-      } else if (!playing) {
-        osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine"; osc.frequency.setValueAtTime(55, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); playing = true; soundBtn.textContent = "Audio: On";
-      }
-    }
-    soundBtn.addEventListener("click", () => toggleSound(false));
-
+    // 6. GERBANG PEMBUKA
     const gate = document.getElementById("editorialGate");
     function enter(withAudio) {
       gate.classList.add("is-unlocked");
       if (withAudio) toggleSound(true);
+      playHeroEntrance();
       initScrollAnimations();
     }
     document.getElementById("btnStartAudio").addEventListener("click", () => enter(true));
