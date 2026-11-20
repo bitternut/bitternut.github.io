@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Notturno Experience — Interactive Graphic Novel</title>
+  <title>Pamidangan Gagasan — Portal Kampus & Novel Grafis Sunda</title>
 
   <!-- Fonts: Cinzel Decorative, Cormorant Garamond, Space Mono, Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <!-- GSAP & ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -18,10 +18,11 @@
     :root {
       --ink-black: #141413;
       --paper-white: #F4F3EF;
-      --paper-shade: #E6E4DD;
+      --paper-tint: #EAE8E0;
       --crimson-red: #B82925;
       --crimson-dark: #7A1916;
-      --sepia-brown: #4E3B31;
+      --earth-brown: #4E3B31;
+      --muted-ink: #5A5852;
       --font-display: 'Cinzel Decorative', serif;
       --font-serif: 'Cormorant Garamond', serif;
       --font-mono: 'Space Mono', monospace;
@@ -34,6 +35,10 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: var(--paper-white);
       color: var(--ink-black);
@@ -42,27 +47,27 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Tekstur Kertas & Tinta Halus di Seluruh Layar */
+    /* Tekstur Serat Kertas Halus */
     .paper-grain {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 9999;
-      opacity: 0.045;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     }
 
-    /* ==================== FIXED NAVIGATION & ANCHORS ==================== */
+    /* ==================== TOP BAR & CORNER ANCHORS ==================== */
     .top-bar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      padding: 1.5rem 2.5rem;
+      padding: 1.25rem 2.5rem;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      z-index: 500;
+      align-items: center;
+      z-index: 600;
       pointer-events: none;
     }
 
@@ -73,51 +78,61 @@
       gap: 0.75rem;
       color: var(--paper-white);
       mix-blend-mode: difference;
-    }
-
-    .brand-mark svg {
-      width: 42px;
-      height: 42px;
+      text-decoration: none;
     }
 
     .brand-mark-text {
       font-family: var(--font-serif);
       font-style: italic;
       font-size: 1.35rem;
-      line-height: 0.9;
-      letter-spacing: 0.02em;
+      line-height: 0.92;
+      font-weight: 700;
     }
 
     .nav-pill {
       pointer-events: auto;
       background: var(--paper-white);
       border: 2px solid var(--ink-black);
-      padding: 0.65rem 1.4rem;
+      padding: 0.6rem 1.25rem;
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      box-shadow: 4px 4px 0px rgba(20, 20, 19, 0.25);
+      gap: 1.15rem;
+      box-shadow: 4px 4px 0px var(--ink-black);
     }
 
-    .nav-pill a {
+    .nav-pill a, .nav-pill button {
+      background: none;
+      border: none;
       text-decoration: none;
       color: var(--ink-black);
       font-family: var(--font-sans);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      cursor: pointer;
       transition: color 0.2s ease;
     }
 
-    .nav-pill a:hover {
+    .nav-pill a:hover, .nav-pill button:hover {
       color: var(--crimson-red);
     }
 
-    /* Corner Red Anchor Labels (Muncul setelah Hero) */
+    .btn-submit-nav {
+      background-color: var(--crimson-red) !important;
+      color: var(--paper-white) !important;
+      padding: 0.4rem 0.85rem;
+      border: 1.5px solid var(--ink-black) !important;
+    }
+
+    .btn-submit-nav:hover {
+      background-color: var(--ink-black) !important;
+    }
+
+    /* Corner Red Anchor Labels */
     .corner-anchors {
       position: fixed;
-      top: 5.5rem;
+      top: 5.2rem;
       left: 0;
       width: 100%;
       padding: 0 2.5rem;
@@ -134,11 +149,11 @@
     }
 
     .anchor-tag {
-      font-family: var(--font-sans);
+      font-family: var(--font-mono);
       font-size: 0.65rem;
       font-weight: 700;
-      letter-spacing: 0.2em;
-      line-height: 1.3;
+      letter-spacing: 0.18em;
+      line-height: 1.35;
       color: var(--crimson-red);
       text-transform: uppercase;
     }
@@ -147,44 +162,53 @@
       text-align: right;
     }
 
-    /* Audio Equalizer Button (Pojok Kanan Bawah) */
+    /* Audio Kendang Toggle */
     .audio-btn {
       position: fixed;
-      bottom: 2rem;
-      right: 2.5rem;
-      z-index: 500;
-      background: transparent;
-      border: none;
+      bottom: 1.75rem;
+      right: 2.25rem;
+      z-index: 600;
+      background: var(--ink-black);
+      color: var(--paper-white);
+      border: 2px solid var(--paper-white);
+      padding: 0.5rem 0.9rem;
       cursor: pointer;
       display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0px var(--crimson-red);
+    }
+
+    .eq-bars {
+      display: flex;
       align-items: flex-end;
-      gap: 3px;
-      height: 24px;
-      padding: 4px;
-      mix-blend-mode: difference;
+      gap: 2.5px;
+      height: 14px;
     }
 
     .eq-bar {
       width: 2.5px;
-      background-color: var(--paper-white);
-      height: 6px;
-      transition: height 0.2s ease;
+      background-color: var(--crimson-red);
+      height: 4px;
     }
 
-    .audio-btn.playing .eq-bar:nth-child(1) { animation: eq 0.7s infinite alternate; }
-    .audio-btn.playing .eq-bar:nth-child(2) { animation: eq 0.5s infinite alternate 0.2s; }
-    .audio-btn.playing .eq-bar:nth-child(3) { animation: eq 0.8s infinite alternate 0.1s; }
-    .audio-btn.playing .eq-bar:nth-child(4) { animation: eq 0.4s infinite alternate 0.3s; }
+    .audio-btn.playing .eq-bar:nth-child(1) { animation: eq 0.5s infinite alternate; }
+    .audio-btn.playing .eq-bar:nth-child(2) { animation: eq 0.35s infinite alternate 0.15s; }
+    .audio-btn.playing .eq-bar:nth-child(3) { animation: eq 0.6s infinite alternate 0.1s; }
 
     @keyframes eq {
-      0% { height: 5px; }
-      100% { height: 20px; }
+      0% { height: 4px; }
+      100% { height: 14px; }
     }
 
-    /* ==================== SECTION 1: OPENING HERO (BLACK INK) ==================== */
+    /* ==================== 1. HERO OPENING (BLACK INK) ==================== */
     .hero-opening {
       position: relative;
-      min-height: 105vh;
+      min-height: 100vh;
       background-color: var(--ink-black);
       color: var(--paper-white);
       display: flex;
@@ -196,99 +220,146 @@
       overflow: hidden;
     }
 
-    /* Guratan Kuas Halus di Background Hero */
     .brush-strokes {
       position: absolute;
       inset: 0;
-      opacity: 0.12;
+      opacity: 0.14;
       background: 
-        repeating-radial-gradient(circle at 20% 30%, transparent 0, transparent 40px, #2a2a28 42px, transparent 45px),
-        repeating-linear-gradient(-12deg, transparent, transparent 35px, #262624 38px, transparent 42px);
+        repeating-radial-gradient(circle at 25% 35%, transparent 0, transparent 38px, #2b2b28 40px, transparent 43px),
+        repeating-linear-gradient(-15deg, transparent, transparent 32px, #242421 35px, transparent 39px);
       pointer-events: none;
     }
 
     .hero-title-wrap {
       position: relative;
       z-index: 10;
-      transform: translateY(-2rem);
+      max-width: 920px;
+      transform: translateY(-1.5rem);
     }
 
-    .hero-the {
-      font-family: var(--font-serif);
-      font-size: 1.35rem;
-      letter-spacing: 0.25em;
+    .hero-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      color: var(--crimson-red);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
       display: block;
-      margin-bottom: 0.25rem;
     }
 
     .hero-main-title {
       font-family: var(--font-display);
-      font-size: clamp(2.8rem, 7.5vw, 6.2rem);
+      font-size: clamp(2.5rem, 6.8vw, 5.6rem);
       font-weight: 700;
-      line-height: 0.95;
-      letter-spacing: -0.02em;
+      line-height: 0.96;
+      letter-spacing: -0.01em;
       text-transform: uppercase;
     }
 
-    .interlocking-oo {
-      display: inline-block;
-      letter-spacing: -0.22em;
-      margin-right: 0.18em;
+    .hero-subtitle {
+      margin: 1.5rem auto 0;
+      max-width: 560px;
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-style: italic;
+      color: #D2CFC6;
+      line-height: 1.5;
     }
 
     .scroll-hint {
       margin-top: 2.5rem;
       font-family: var(--font-mono);
-      font-size: 0.7rem;
-      letter-spacing: 0.25em;
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #9e9b93;
+      color: #8E8B82;
     }
 
-    /* Cipratan Tinta Putih di Bawah Hero (Transisi ke Kertas Putih) */
     .ink-splatter-transition {
       position: absolute;
       bottom: -2px;
       left: 0;
       width: 100%;
-      height: 180px;
+      height: 165px;
       z-index: 15;
       pointer-events: none;
     }
 
-    /* ==================== SECTION 2: GRAPHIC NOVEL COMIC STORY ==================== */
-    .comic-world {
+    /* ==================== 2. GRAPHIC NOVEL STORYTELLING (SUNDA & ADU DOMBA) ==================== */
+    .story-world {
       background-color: var(--paper-white);
-      position: relative;
-      padding: 6rem 6% 8rem;
-    }
-
-    .chapter-container {
-      max-width: 1120px;
-      margin: 0 auto 12rem;
+      padding: 6.5rem 6% 4rem;
       position: relative;
     }
 
-    /* Panel Komik Trapesium dengan Border Tinta Kasar */
+    .chapter-block {
+      max-width: 1040px;
+      margin: 0 auto 10.5rem;
+      position: relative;
+    }
+
+    .chapter-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--crimson-red);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      display: block;
+      text-align: center;
+    }
+
     .comic-panel-wrapper {
       position: relative;
       width: 100%;
-      max-width: 780px;
+      max-width: 820px;
       margin: 0 auto;
+    }
+
+    /* Kotak Narasi Komik (Diletakkan di atas & bawah agar tidak menutupi wajah tokoh) */
+    .caption-box {
+      position: relative;
+      z-index: 30;
+      background-color: var(--paper-white);
+      border: 2px solid var(--ink-black);
+      padding: 1.15rem 1.45rem;
+      max-width: 440px;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--ink-black);
+      box-shadow: 5px 5px 0px var(--ink-black);
+    }
+
+    .caption-top-left {
+      margin-bottom: -1.4rem;
+      margin-left: -1.5rem;
+    }
+
+    .caption-bottom-right {
+      margin-top: -1.6rem;
+      margin-left: auto;
+      margin-right: -1.5rem;
+    }
+
+    .caption-bottom-left {
+      margin-top: -1.6rem;
+      margin-left: -1.5rem;
     }
 
     .trapezoid-frame {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 10;
-      background-color: #EAE8E1;
-      /* Bentuk trapesium asimetris seperti di Santioni */
-      clip-path: polygon(4% 6%, 98% 0%, 94% 96%, 0% 100%);
+      background-color: var(--paper-tint);
+      clip-path: polygon(3% 4%, 98% 0%, 95% 97%, 0% 100%);
       overflow: hidden;
-      box-shadow: inset 0 0 60px rgba(20, 20, 19, 0.08);
     }
 
-    /* Garis Tepi Tinta Hitam Mengikuti Bentuk Trapesium */
     .trapezoid-border-svg {
       position: absolute;
       inset: 0;
@@ -298,554 +369,818 @@
       z-index: 20;
     }
 
-    /* Kotak Narasi Komik (Menembus Batas Panel) */
-    .caption-box {
-      position: relative;
-      z-index: 30;
-      background-color: var(--paper-white);
-      border: 2px solid var(--ink-black);
-      padding: 1.15rem 1.4rem;
-      max-width: 390px;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-      line-height: 1.55;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--ink-black);
-      box-shadow: 5px 5px 0px var(--ink-black);
-    }
-
-    .caption-top-left {
-      margin-bottom: -2.2rem;
-      margin-left: -1.5rem;
-    }
-
-    .caption-bottom-left {
-      margin-top: -2.5rem;
-      margin-left: -2rem;
-    }
-
-    .caption-bottom-right {
-      margin-top: -2.5rem;
-      margin-left: auto;
-      margin-right: -1.5rem;
-    }
-
-    /* Efek Onomatopoeia (Suara Komik) */
-    .sfx-badge {
+    /* Efek Suara Kendang & Benturan Tanduk */
+    .sfx-callout {
       position: absolute;
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 1.35rem;
       color: var(--crimson-red);
-      letter-spacing: 0.12em;
-      transform: rotate(-8deg);
+      letter-spacing: 0.1em;
       z-index: 25;
-      text-shadow: 2px 2px 0px var(--paper-white);
+      text-shadow: 2px 2px 0px var(--paper-white), -1px -1px 0px var(--paper-white);
       pointer-events: none;
     }
 
-    /* Grid Ritual Komik (Chill, Shake, Pour) */
-    .comic-triptych {
+    /* 5 Pilar Karakter Sunda (Cageur, Bageur, Bener, Pinter, Singer) */
+    .sunda-pillars {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2.5rem;
-      max-width: 1120px;
-      margin: 6rem auto 4rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      max-width: 960px;
+      margin: 4rem auto 0;
     }
 
-    .triptych-card {
-      position: relative;
-    }
-
-    .triptych-panel {
-      aspect-ratio: 4 / 5;
-      background: #ECEAE3;
-      border: 3px solid var(--ink-black);
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 1.25rem;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .triptych-card:nth-child(1) .triptych-panel { transform: rotate(-1.5deg); }
-    .triptych-card:nth-child(2) .triptych-panel { transform: rotate(1.2deg) translateY(15px); }
-    .triptych-card:nth-child(3) .triptych-panel { transform: rotate(-1deg); }
-
-    .triptych-card:hover .triptych-panel {
-      transform: rotate(0deg) translateY(-6px);
-    }
-
-    .triptych-caption {
-      background: var(--paper-white);
+    .pillar-card {
       border: 2px solid var(--ink-black);
-      padding: 0.9rem 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      line-height: 1.5;
+      background: var(--paper-white);
+      padding: 1.25rem 1rem;
+      text-align: center;
+      box-shadow: 4px 4px 0px var(--ink-black);
+      transition: transform 0.25s ease, background-color 0.25s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-5px);
+      background-color: var(--ink-black);
+      color: var(--paper-white);
+    }
+
+    .pillar-card h4 {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-style: italic;
+      color: var(--crimson-red);
+      margin-bottom: 0.35rem;
+    }
+
+    .pillar-card p {
+      font-size: 0.74rem;
+      line-height: 1.45;
+      opacity: 0.85;
+    }
+
+    /* ==================== 3. PORTAL KAMPUS: PENGUMUMAN, ARTIKEL & KARIR ==================== */
+    .campus-hub {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 3rem 6% 7rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 3px solid var(--ink-black);
+      padding-bottom: 1rem;
+      margin-bottom: 2.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-header h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4vw, 3rem);
       font-weight: 700;
       text-transform: uppercase;
-      box-shadow: 3px 3px 0px var(--ink-black);
+      letter-spacing: 0.02em;
+      line-height: 1;
     }
 
-    /* ==================== SECTION 3: SELECT HOUSES & HARD-SPLIT FOOTER ==================== */
-    .forthcoming-section {
-      background-color: var(--paper-white);
-      padding: 7rem 2rem 6rem;
-      text-align: center;
-      position: relative;
-    }
-
-    .forthcoming-title {
-      font-family: var(--font-serif);
-      font-size: clamp(2.4rem, 5.5vw, 4.5rem);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      line-height: 1.05;
-      text-transform: uppercase;
-      color: var(--ink-black);
-    }
-
-    .forthcoming-sub {
-      margin-top: 1.2rem;
+    .section-header .sub-tag {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.25em;
+      font-size: 0.7rem;
+      color: var(--crimson-red);
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /* Filter Pills */
+    .filter-bar {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--paper-white);
+      border: 1.5px solid var(--ink-black);
+      padding: 0.45rem 0.95rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--ink-black);
+      color: var(--paper-white);
+    }
+
+    /* Papan Pengumuman Kampus */
+    .bulletin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 6rem;
+    }
+
+    .bulletin-card {
+      border: 2px solid var(--ink-black);
+      background: var(--paper-tint);
+      padding: 1.5rem;
+      position: relative;
+      box-shadow: 4px 4px 0px var(--ink-black);
+    }
+
+    .bulletin-badge {
+      display: inline-block;
+      background: var(--crimson-red);
+      color: var(--paper-white);
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.85rem;
+    }
+
+    .bulletin-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      line-height: 1.2;
+      margin-bottom: 0.65rem;
+    }
+
+    .bulletin-card p {
+      font-size: 0.84rem;
+      line-height: 1.6;
+      color: var(--muted-ink);
+      margin-bottom: 1rem;
+    }
+
+    .bulletin-meta {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--ink-black);
+      border-top: 1px dashed var(--ink-black);
+      padding-top: 0.65rem;
+    }
+
+    /* Warta & Tulisan Mahasiswa */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-bottom: 6rem;
+    }
+
+    .article-card {
+      border: 2px solid var(--ink-black);
+      background: var(--paper-white);
+      padding: 1.85rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 5px 5px 0px var(--ink-black);
+      transition: transform 0.25s ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .article-cat {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
       color: var(--crimson-red);
       text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 0.6rem;
     }
 
-    /* Hard-Split Footer Hitam Pekat */
+    .article-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      line-height: 1.18;
+      margin-bottom: 0.85rem;
+    }
+
+    .article-excerpt {
+      font-size: 0.88rem;
+      line-height: 1.68;
+      color: var(--muted-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    .article-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1.5px solid var(--ink-black);
+      padding-top: 0.9rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+    }
+
+    .btn-read {
+      background: var(--ink-black);
+      color: var(--paper-white);
+      border: none;
+      padding: 0.45rem 0.9rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-read:hover {
+      background: var(--crimson-red);
+    }
+
+    /* Papan Karir, Magang & Part-Time */
+    .jobs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .job-row {
+      border: 2px solid var(--ink-black);
+      background: var(--paper-white);
+      padding: 1.4rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      box-shadow: 4px 4px 0px var(--ink-black);
+    }
+
+    .job-info h4 {
+      font-family: var(--font-serif);
+      font-size: 1.55rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .job-company {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted-ink);
+    }
+
+    .job-tags {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .job-tag {
+      border: 1.5px solid var(--ink-black);
+      padding: 0.3rem 0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .job-tag.type {
+      background: var(--crimson-red);
+      color: var(--paper-white);
+      border-color: var(--ink-black);
+    }
+
+    /* ==================== MODAL (KIRIM TULISAN & BACA ARTIKEL) ==================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 20, 19, 0.82);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--paper-white);
+      border: 3px solid var(--ink-black);
+      max-width: 640px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 2.25rem;
+      position: relative;
+      box-shadow: 8px 8px 0px var(--crimson-red);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: var(--ink-black);
+      color: var(--paper-white);
+      border: none;
+      width: 32px;
+      height: 32px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 1.15rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--ink-black);
+      background: #FFFFFF;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+    }
+
+    .btn-primary-ink {
+      background: var(--crimson-red);
+      color: var(--paper-white);
+      border: 2px solid var(--ink-black);
+      padding: 0.85rem 1.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px var(--ink-black);
+    }
+
+    .btn-primary-ink:hover {
+      background: var(--ink-black);
+    }
+
+    /* ==================== HARD-SPLIT FOOTER ==================== */
     .footer-black {
       background-color: var(--ink-black);
       color: var(--paper-white);
-      padding: 4.5rem 3.5rem;
+      padding: 4.5rem 6%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 2.5rem;
-      border-top: 4px solid var(--ink-black);
+      border-top: 5px solid var(--crimson-red);
     }
 
-    .footer-logo-group {
+    .footer-brand {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.15rem;
     }
 
-    .footer-logo-group svg {
-      width: 68px;
-      height: 68px;
-    }
-
-    .footer-brand-script {
+    .footer-brand-title {
       font-family: var(--font-serif);
       font-style: italic;
-      font-size: 2.2rem;
-      line-height: 0.85;
+      font-size: 2rem;
+      line-height: 0.9;
     }
 
-    .footer-links-right {
+    .footer-right {
       text-align: right;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
+      font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.14em;
+      line-height: 1.8;
     }
 
-    .footer-links-right a {
+    .footer-right a {
       color: var(--paper-white);
       text-decoration: none;
-      font-weight: 700;
     }
 
-    .footer-links-right a:hover {
+    .footer-right a:hover {
       color: var(--crimson-red);
     }
 
-    .footer-credits {
-      margin-top: 0.75rem;
-      color: #8E8C84;
-      font-size: 0.68rem;
-      letter-spacing: 0.05em;
-    }
-
-    .footer-credits span {
-      text-decoration: underline;
-      color: var(--paper-white);
+    @media (max-width: 900px) {
+      .sunda-pillars { grid-template-columns: repeat(2, 1fr); }
+      .bulletin-grid { grid-template-columns: 1fr; }
+      .articles-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
-      .comic-triptych { grid-template-columns: 1fr; }
-      .caption-top-left, .caption-bottom-left, .caption-bottom-right {
-        margin: 1rem 0;
+      .top-bar { padding: 1rem; }
+      .nav-pill { gap: 0.65rem; padding: 0.5rem 0.85rem; }
+      .corner-anchors { display: none; }
+      .caption-top-left, .caption-bottom-right, .caption-bottom-left {
+        margin: 0.75rem 0;
         max-width: 100%;
       }
-      .corner-anchors { display: none; }
-      .top-bar { padding: 1rem 1.25rem; }
       .footer-black { flex-direction: column; text-align: center; }
-      .footer-links-right { text-align: center; }
+      .footer-right { text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Tekstur Kertas & Tinta -->
   <div class="paper-grain"></div>
 
-  <!-- Fixed Top Navigation -->
+  <!-- Top Navigation -->
   <header class="top-bar">
-    <div class="brand-mark">
-      <!-- Emblem Kubah & Biarawan -->
-      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+    <a href="#hero" class="brand-mark">
+      <svg width="38" height="38" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="32" cy="32" r="28" />
-        <path d="M16 46 C16 24, 48 24, 48 46" />
-        <circle cx="32" cy="22" r="5" />
-        <path d="M24 46 L27 29 L37 29 L40 46" />
-        <line x1="32" y1="4" x2="32" y2="12" />
+        <path d="M16 44 L32 18 L48 44 Z" />
+        <path d="M22 30 C16 22, 24 14, 32 22 C40 14, 48 22, 42 30" stroke="#B82925" stroke-width="2.5" />
       </svg>
-      <div class="brand-mark-text">Santioni<br>Spirits</div>
-    </div>
+      <div class="brand-mark-text">Pamidangan<br>Gagasan</div>
+    </a>
 
     <nav class="nav-pill">
-      <a href="#experience">Experience</a>
-      <!-- Ikon Ilustrasi Merah Pemisah -->
-      <svg width="26" height="16" viewBox="0 0 36 20" fill="none" stroke="#B82925" stroke-width="1.5">
-        <path d="M2 12 C8 4, 14 16, 20 8 C26 2, 30 14, 34 8" />
-        <circle cx="18" cy="10" r="3" />
-      </svg>
-      <a href="#collection">Collection</a>
+      <a href="#cerita">Cerita</a>
+      <a href="#pengumuman">Info</a>
+      <a href="#warta">Warta</a>
+      <a href="#karir">Karir</a>
+      <button class="btn-submit-nav" id="openSubmitModal">+ Kirim Tulisan</button>
     </nav>
   </header>
 
   <!-- Corner Red Anchors -->
   <div class="corner-anchors" id="cornerAnchors">
-    <div class="anchor-tag">SANTIONI<br>SPIRITS</div>
-    <div class="anchor-tag right">NOTTURNO<br>COLLECTION</div>
+    <div class="anchor-tag">JURNAL &amp; WARTA<br>MAHASISWA GARUT</div>
+    <div class="anchor-tag right">SILIH ASAH • SILIH ASIH<br>SILIH ASUH</div>
   </div>
 
-  <!-- Audio Equalizer Toggle -->
-  <button class="audio-btn" id="audioBtn" title="Toggle Ambient Sound">
-    <div class="eq-bar"></div>
-    <div class="eq-bar"></div>
-    <div class="eq-bar"></div>
-    <div class="eq-bar"></div>
+  <!-- Audio Kendang Toggle -->
+  <button class="audio-btn" id="audioBtn">
+    <div class="eq-bars">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+    <span id="audioLabel">Kendang: Off</span>
   </button>
 
-  <!-- ==================== 1. HERO OPENING (DARK INK & WHITE SPLATTER) ==================== -->
+  <!-- ==================== 1. OPENING TITLE SCREEN ==================== -->
   <section class="hero-opening" id="hero">
     <div class="brush-strokes"></div>
-    
     <div class="hero-title-wrap">
-      <span class="hero-the">THE</span>
-      <h1 class="hero-main-title">
-        N<span class="interlocking-oo">OO</span>TTURNO<br>EXPERIENCE
-      </h1>
-      <div class="scroll-hint">[ Scroll to Unfold the Tale ]</div>
+      <span class="hero-kicker">Mimbar Akademik, Budaya &amp; Karir Mahasiswa</span>
+      <h1 class="hero-main-title">PAMIDANGAN<br>GAGASAN</h1>
+      <p class="hero-subtitle">
+        “Dari tanah Priangan yang dikelilingi gunung, ketajaman nalar ditempa bukan untuk saling menjatuhkan, melainkan saling mengasah.”
+      </p>
+      <div class="scroll-hint">[ Gulir ke Bawah untuk Membuka Lembaran ]</div>
     </div>
 
-    <!-- Cipratan Tinta Putih di Bagian Bawah -->
-    <svg class="ink-splatter-transition" viewBox="0 0 1440 200" preserveAspectRatio="none">
-      <path fill="#F4F3EF" d="M0,200 L0,155 Q45,130 90,150 T190,135 Q240,110 290,145 T410,130 Q470,95 530,135 T660,120 Q720,85 785,125 T920,135 Q985,105 1050,140 T1190,125 Q1260,95 1330,140 T1440,130 L1440,200 Z" />
-      <!-- Tetesan tinta melayang -->
-      <circle cx="480" cy="85" r="14" fill="#F4F3EF" class="ink-drop" />
-      <circle cx="515" cy="70" r="7" fill="#F4F3EF" class="ink-drop" />
-      <circle cx="710" cy="65" r="18" fill="#F4F3EF" class="ink-drop" />
-      <circle cx="745" cy="82" r="9" fill="#F4F3EF" class="ink-drop" />
-      <circle cx="620" cy="95" r="11" fill="#F4F3EF" class="ink-drop" />
+    <!-- Transisi Cipratan Tinta Putih -->
+    <svg class="ink-splatter-transition" viewBox="0 0 1440 180" preserveAspectRatio="none">
+      <path fill="#F4F3EF" d="M0,180 L0,135 Q60,110 120,130 T240,115 Q310,95 380,128 T520,110 Q600,80 680,120 T840,110 Q920,85 1000,122 T1160,108 Q1260,85 1350,125 T1440,115 L1440,180 Z" />
+      <circle cx="440" cy="75" r="12" fill="#F4F3EF" class="ink-drop" />
+      <circle cx="720" cy="60" r="16" fill="#F4F3EF" class="ink-drop" />
+      <circle cx="980" cy="72" r="10" fill="#F4F3EF" class="ink-drop" />
     </svg>
   </section>
 
-  <!-- ==================== 2. COMIC STORYTELLING ON PAPER WHITE ==================== -->
-  <main class="comic-world" id="experience">
+  <!-- ==================== 2. COMIC STORYTELLING: BUDAYA SUNDA & ADU DOMBA ==================== -->
+  <section class="story-world" id="cerita">
 
-    <!-- CHAPTER 1: THE WANDERER IN THE MIST -->
-    <div class="chapter-container">
+    <!-- BABAK I: PERJALANAN PENUNTUT ILMU DI LEMBAH GARUT -->
+    <div class="chapter-block" id="chapter1">
+      <span class="chapter-label">Babak I — Ngaguar Élmu di Tanah Priangan</span>
+
+      <div class="comic-panel-wrapper">
+        <!-- Kotak Narasi di Atas Kiri (Bersih dari kepala tokoh) -->
+        <div class="caption-box caption-top-left reveal-caption">
+          Di lembah Garut yang diapit Gunung Guntur dan Cikuray, seorang penuntut ilmu melangkah menembus kabut pagi membawa catatan gagasan.
+        </div>
+
+        <div class="trapezoid-frame">
+          <svg viewBox="0 0 800 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="skyHatch" width="8" height="8" patternTransform="rotate(35 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="8" stroke="#141413" stroke-width="1" stroke-opacity="0.14" />
+              </pattern>
+            </defs>
+
+            <!-- Langit Kertas Berarsir -->
+            <rect width="800" height="500" fill="#ECEAE2" />
+            <rect width="800" height="500" fill="url(#skyHatch)" />
+
+            <!-- Matahari Merah Marun Terbit di Balik Gunung -->
+            <circle id="prianganSun" cx="540" cy="240" r="78" fill="#B82925" opacity="0.9" />
+
+            <!-- Lapisan Gunung Belakang (Cikuray) -->
+            <path d="M260 350 L510 115 L790 350 Z" fill="#D5D2C7" stroke="#141413" stroke-width="2.5" />
+            <!-- Lapisan Gunung Depan (Guntur) -->
+            <path d="M-30 365 L210 145 L460 365 Z" fill="#C7C3B6" stroke="#141413" stroke-width="2.5" />
+
+            <!-- Kabut Lembah yang Menyibak Saat Di-scroll -->
+            <path id="valleyMistLeft" d="M-60 315 Q160 280 390 320 L390 385 L-60 385 Z" fill="#F4F3EF" opacity="0.88" />
+            <path id="valleyMistRight" d="M360 310 Q600 275 860 315 L860 385 L360 385 Z" fill="#F4F3EF" opacity="0.88" />
+
+            <!-- Dataran Lembah & Jalan Setapak -->
+            <path d="M0 355 Q400 340 800 360 L800 500 L0 500 Z" fill="#DFDDD3" stroke="#141413" stroke-width="2.5" />
+            <path d="M290 500 Q370 420 425 352" fill="none" stroke="#141413" stroke-width="2" stroke-dasharray="8 6" />
+
+            <!-- Sosok Mahasiswa Ber-Iket Sunda (Proporsi Proporsional di Lembah Bawah) -->
+            <g id="studentScholar" transform="translate(335, 318)">
+              <!-- Bayangan langkah -->
+              <ellipse cx="22" cy="112" rx="34" ry="7" fill="#141413" opacity="0.25" />
+              <!-- Kaki melangkah -->
+              <path d="M16 74 L10 110 M28 74 L35 108" stroke="#141413" stroke-width="5.5" stroke-linecap="round" />
+              <!-- Baju Pangsi / Jubah Ringkas -->
+              <path d="M10 30 L34 30 L39 76 L5 76 Z" fill="#141413" />
+              <!-- Kepala & Iket Kepala Sunda (Totopong) -->
+              <circle cx="22" cy="17" r="9.5" fill="#141413" />
+              <path d="M11 15 Q22 5 33 15 L36 10 L29 18 L15 18 L8 10 Z" fill="#B82925" stroke="#141413" stroke-width="1.5" />
+              <!-- Buku / Gulungan Naskah di Tangan -->
+              <rect x="33" y="42" width="18" height="13" transform="rotate(-12 33 42)" fill="#F4F3EF" stroke="#141413" stroke-width="2" />
+              <line x1="36" y1="47" x2="47" y2="45" stroke="#B82925" stroke-width="2" />
+            </g>
+          </svg>
+
+          <!-- Bingkai Trapesium Tinta Ganda -->
+          <svg class="trapezoid-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="3,4 98,0 95,97 0,100" fill="none" stroke="#141413" stroke-width="1.3" />
+            <polygon points="3.6,4.8 97.3,0.9 94.4,96.1 0.7,99.1" fill="none" stroke="#141413" stroke-width="0.4" />
+          </svg>
+        </div>
+
+        <div class="caption-box caption-bottom-right reveal-caption">
+          Pendidikan bagi urang Sunda bukan sekadar gelar, melainkan laku hidup: cageur, bageur, bener, pinter, tur singer.
+        </div>
+      </div>
+
+      <!-- 5 Pilar Karakter Sunda -->
+      <div class="sunda-pillars">
+        <div class="pillar-card">
+          <h4>Cageur</h4>
+          <p>Sehat jasmani, jernih pikiran, dan tangguh mental.</p>
+        </div>
+        <div class="pillar-card">
+          <h4>Bageur</h4>
+          <p>Berbudi pekerti luhur serta peduli pada sesama.</p>
+        </div>
+        <div class="pillar-card">
+          <h4>Bener</h4>
+          <p>Berintegritas, jujur dalam data, dan teguh pada etika.</p>
+        </div>
+        <div class="pillar-card">
+          <h4>Pinter</h4>
+          <p>Cerdas berilmu dan adaptif menghadapi zaman.</p>
+        </div>
+        <div class="pillar-card">
+          <h4>Singer</h4>
+          <p>Cekatan, terampil berkarya, dan peka situasi.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BABAK II: PAMIDANGAN SILIH ASAH (ANIMASI ADU DOMBA GARUT 3 FASE) -->
+    <div class="chapter-block" id="chapter2">
+      <span class="chapter-label">Babak II — Pamidangan Silih Asah (Adu Ketangkasan Gagasan)</span>
+
       <div class="comic-panel-wrapper">
         <div class="caption-box caption-top-left reveal-caption">
-          In an immense land of nothingness, a lonely figure wanders through the mist.
+          Di arena pamidangan, dua Domba Garut bertanduk lingkar tidak bertarung karena benci—melainkan menguji ketangkasan, kehormatan, dan irama.
         </div>
 
-        <div class="trapezoid-frame parallax-panel">
-          <!-- Ilustrasi SVG Gaya Ink-Wash & Arsir Kertas -->
+        <div class="trapezoid-frame" id="arenaPanel">
+          <!-- Callout Bunyi Kendang & Benturan Tanduk -->
+          <div class="sfx-callout" id="sfxImpact" style="top: 18%; left: 50%; transform: translateX(-50%) scale(0.6); opacity: 0; font-size: 1.75rem;">
+            DUNG! TAK!!
+          </div>
+
           <svg viewBox="0 0 800 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <pattern id="inkHatch" width="8" height="8" patternTransform="rotate(35 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="8" stroke="#141413" stroke-width="1" stroke-opacity="0.18" />
-              </pattern>
-            </defs>
-            <!-- Latar Kabut & Arsir -->
-            <rect width="800" height="500" fill="#ECEAE2" />
-            <rect width="800" height="500" fill="url(#inkHatch)" />
-            <!-- Guratan Kabut -->
-            <path d="M-50 320 Q200 270 450 310 T850 290 L850 500 L-50 500 Z" fill="#DCD9CE" />
-            <path d="M-50 380 Q280 340 520 390 T850 370 L850 500 L-50 500 Z" fill="#C9C5B8" />
-            
-            <!-- Sosok Biarawan Berjubah Cokelat Tinta -->
-            <g class="parallax-subject" transform="translate(360, 175)">
-              <!-- Bayangan di tanah -->
-              <ellipse cx="45" cy="215" rx="65" ry="12" fill="#141413" opacity="0.25" />
-              <!-- Jubah -->
-              <path d="M35 45 C20 90, 10 155, 5 210 L85 210 C80 155, 70 90, 55 45 Z" fill="#4E3B31" stroke="#141413" stroke-width="3" />
-              <!-- Lipatan Arsir Jubah -->
-              <path d="M38 75 L30 195 M52 75 L62 195 M45 95 L45 205" stroke="#141413" stroke-width="2" />
-              <!-- Tudung Kepala -->
-              <path d="M30 48 C28 20, 62 20, 60 48 C52 55, 38 55, 30 48 Z" fill="#3B2B23" stroke="#141413" stroke-width="3" />
-              <!-- Tongkat Kayu -->
-              <line x1="88" y1="30" x2="78" y2="212" stroke="#141413" stroke-width="4" stroke-linecap="round" />
-            </g>
-          </svg>
-
-          <!-- Garis Tepi Tinta Hitam Kasar -->
-          <svg class="trapezoid-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="4,6 98,0 94,96 0,100" fill="none" stroke="#141413" stroke-width="1.2" />
-            <polygon points="4.5,6.8 97.3,0.8 93.4,95.2 0.7,99.2" fill="none" stroke="#141413" stroke-width="0.4" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- CHAPTER 2: THE CRIMSON PORTAL (SESUAI SCREENSHOT TERAKHIR) -->
-    <div class="chapter-container">
-      <div class="comic-panel-wrapper">
-        <div class="sfx-badge" style="top: 12%; right: 8%;">HUMMM...</div>
-
-        <div class="trapezoid-frame parallax-panel">
-          <svg viewBox="0 0 800 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <!-- Pola Arsir Melingkar untuk Portal Merah -->
-              <pattern id="portalHatch" width="6" height="6" patternTransform="rotate(-25 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="6" stroke="#4D0E0C" stroke-width="1.5" />
+              <pattern id="arenaHatch" width="6" height="6" patternTransform="rotate(-25 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#5A0F0D" stroke-width="1.4" />
               </pattern>
             </defs>
 
-            <!-- Latar Putih Kertas -->
-            <rect width="800" height="500" fill="#F2F0E8" />
+            <!-- Latar Kertas Arena -->
+            <rect width="800" height="500" fill="#EFECE4" />
 
-            <!-- Portal Raksasa Merah Marun Berarsir -->
-            <g class="portal-orb" transform="translate(510, 235)">
-              <circle cx="0" cy="0" r="185" fill="#B82925" />
-              <circle cx="0" cy="0" r="185" fill="url(#portalHatch)" opacity="0.55" />
-              <circle cx="0" cy="0" r="155" fill="none" stroke="#6E1411" stroke-width="2" stroke-dasharray="12 6" />
-              <circle cx="0" cy="0" r="120" fill="none" stroke="#141413" stroke-width="1.5" opacity="0.4" />
+            <!-- Tiang Bambu Pamidangan di Latar Belakang -->
+            <line x1="120" y1="90" x2="120" y2="395" stroke="#141413" stroke-width="4" opacity="0.25" />
+            <line x1="680" y1="90" x2="680" y2="395" stroke="#141413" stroke-width="4" opacity="0.25" />
+            <line x1="90" y1="145" x2="710" y2="145" stroke="#141413" stroke-width="2.5" opacity="0.2" />
+
+            <!-- Lingkaran Pamidangan Merah Berarsir -->
+            <g id="arenaCircle" transform="translate(400, 265)">
+              <circle cx="0" cy="0" r="165" fill="#B82925" />
+              <circle cx="0" cy="0" r="165" fill="url(#arenaHatch)" opacity="0.55" />
+              <circle cx="0" cy="0" r="142" fill="none" stroke="#F4F3EF" stroke-width="1.5" stroke-dasharray="10 6" opacity="0.6" />
             </g>
 
-            <!-- Garis Tanah & Bayangan -->
-            <path d="M0 395 Q400 385 800 400 L800 500 L0 500 Z" fill="#141413" opacity="0.12" />
-            <line x1="40" y1="395" x2="760" y2="395" stroke="#141413" stroke-width="2.5" />
+            <!-- Gelombang Kejut Saat Tanduk Beradu (Shockwave) -->
+            <g id="clashWave" transform="translate(400, 295)" opacity="0">
+              <circle cx="0" cy="0" r="35" fill="none" stroke="#F4F3EF" stroke-width="4" />
+              <circle cx="0" cy="0" r="65" fill="none" stroke="#141413" stroke-width="3" stroke-dasharray="8 6" />
+              <!-- Percikan Garis Tinta -->
+              <line x1="0" y1="-45" x2="0" y2="-85" stroke="#141413" stroke-width="3.5" />
+              <line x1="-35" y1="-35" x2="-65" y2="-65" stroke="#141413" stroke-width="3.5" />
+              <line x1="35" y1="-35" x2="65" y2="-65" stroke="#141413" stroke-width="3.5" />
+            </g>
 
-            <!-- Siluet Biarawan & Keledai Menghadap Portal -->
-            <g class="parallax-subject" transform="translate(210, 245)">
-              <!-- Siluet Keledai/Kuda -->
-              <path d="M10 150 L15 95 L5 75 L18 68 L28 85 L75 85 L88 65 L95 72 L85 95 L92 150 L80 150 L75 112 L25 112 L20 150 Z" fill="#2A2623" stroke="#141413" stroke-width="2" />
-              <!-- Siluet Biarawan Berdiri di Sampingnya -->
-              <path d="M125 45 C115 80, 110 120, 108 150 L152 150 C150 120, 145 80, 135 45 Z" fill="#141413" />
-              <circle cx="130" cy="34" r="11" fill="#141413" />
+            <!-- Lantai Tanah Arena -->
+            <path d="M0 392 Q400 384 800 392 L800 500 L0 500 Z" fill="#141413" opacity="0.14" />
+            <line x1="30" y1="392" x2="770" y2="392" stroke="#141413" stroke-width="3" />
+
+            <!-- DOMBA GARUT KIRI (Anatomi Tanduk Spiral & Kuda-kuda) -->
+            <g id="ramLeft" transform="translate(175, 255)">
+              <!-- Bayangan -->
+              <ellipse cx="65" cy="136" rx="68" ry="9" fill="#141413" opacity="0.3" />
+              <!-- Kaki Belakang & Depan (Kuda-kuda Menerjang) -->
+              <path d="M25 90 L10 135 M42 92 L35 135 M92 88 L108 135 M108 84 L125 132" stroke="#141413" stroke-width="7" stroke-linecap="round" />
+              <!-- Badan Berbulu Tebal -->
+              <path d="M18 52 C15 28, 78 24, 112 42 C125 52, 122 86, 102 92 L28 92 C14 88, 12 68, 18 52 Z" fill="#F4F3EF" stroke="#141413" stroke-width="3.5" />
+              <!-- Surai Leher Hitam -->
+              <path d="M85 34 C105 32, 124 46, 122 72 L96 82 Z" fill="#141413" />
+              <!-- Kepala Menunduk Siap Adu -->
+              <path d="M112 46 L146 62 L138 82 L106 74 Z" fill="#141413" />
+              <!-- Tanduk Spiral Besar Khas Domba Garut -->
+              <path d="M118 48 C115 16, 78 14, 74 44 C71 66, 96 74, 106 58 C111 50, 102 42, 95 48" fill="none" stroke="#141413" stroke-width="11" stroke-linecap="round" />
+              <path d="M118 48 C115 16, 78 14, 74 44 C71 66, 96 74, 106 58" fill="none" stroke="#B82925" stroke-width="3" stroke-dasharray="4 5" />
+            </g>
+
+            <!-- DOMBA GARUT KANAN (Cerminan Berlawanan) -->
+            <g id="ramRight" transform="translate(625, 255) scale(-1, 1)">
+              <ellipse cx="65" cy="136" rx="68" ry="9" fill="#141413" opacity="0.3" />
+              <path d="M25 90 L10 135 M42 92 L35 135 M92 88 L108 135 M108 84 L125 132" stroke="#141413" stroke-width="7" stroke-linecap="round" />
+              <path d="M18 52 C15 28, 78 24, 112 42 C125 52, 122 86, 102 92 L28 92 C14 88, 12 68, 18 52 Z" fill="#232220" stroke="#141413" stroke-width="3.5" />
+              <path d="M85 34 C105 32, 124 46, 122 72 L96 82 Z" fill="#141413" />
+              <path d="M112 46 L146 62 L138 82 L106 74 Z" fill="#141413" />
+              <!-- Tanduk Spiral -->
+              <path d="M118 48 C115 16, 78 14, 74 44 C71 66, 96 74, 106 58 C111 50, 102 42, 95 48" fill="none" stroke="#F4F3EF" stroke-width="11" stroke-linecap="round" />
+              <path d="M118 48 C115 16, 78 14, 74 44 C71 66, 96 74, 106 58" fill="none" stroke="#141413" stroke-width="4" stroke-dasharray="4 5" />
             </g>
           </svg>
 
-          <!-- Bingkai Trapesium Tinta Hitam -->
+          <!-- Bingkai Trapesium -->
           <svg class="trapezoid-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="4,6 98,0 94,96 0,100" fill="none" stroke="#141413" stroke-width="1.3" />
+            <polygon points="3,4 98,0 95,97 0,100" fill="none" stroke="#141413" stroke-width="1.3" />
           </svg>
         </div>
 
-        <!-- Kotak Narasi yang Menjorok Keluar Panel (Persis seperti di Screenshot) -->
         <div class="caption-box caption-bottom-left reveal-caption">
-          As he approaches the portal, the holy sound grows stronger, shaking him to the core. Light begins to pulsate, inviting him closer.
+          Begitu pula mimbar kampus: perbedaan argumen dalam tulisan adalah bentuk silih asah—menguji ketajaman nalar sebelum melangkah ke dunia nyata.
         </div>
       </div>
     </div>
 
-    <!-- CHAPTER 3: THE NIGHT RITUAL (CHILL, SHAKE, POUR) -->
-    <div id="collection">
-      <div class="comic-triptych">
-        <!-- Panel 1: Chill -->
-        <div class="triptych-card">
-          <div class="triptych-panel">
-            <span class="sfx-badge" style="top: 14px; right: 16px; font-size: 1rem;">CLINK!</span>
-            <svg viewBox="0 0 300 375" width="100%" height="100%">
-              <rect width="300" height="375" fill="#EFECE4" />
-              <!-- Gelas Kristal & Es Batu -->
-              <polygon points="85,140 215,140 195,300 105,300" fill="none" stroke="#141413" stroke-width="4" />
-              <rect x="115" y="185" width="42" height="42" transform="rotate(-12 136 206)" fill="#DCD8CC" stroke="#141413" stroke-width="3" />
-              <rect x="150" y="215" width="38" height="38" transform="rotate(15 169 234)" fill="#DCD8CC" stroke="#141413" stroke-width="3" />
-              <line x1="95" y1="300" x2="205" y2="300" stroke="#141413" stroke-width="6" />
-            </svg>
-          </div>
-          <div class="triptych-caption">
-            01. Chill your spirit. The night starts after dinner.
-          </div>
-        </div>
-
-        <!-- Panel 2: Shake -->
-        <div class="triptych-card">
-          <div class="triptych-panel">
-            <span class="sfx-badge" style="top: 18px; left: 16px; font-size: 1rem;">SHHHK!</span>
-            <svg viewBox="0 0 300 375" width="100%" height="100%">
-              <rect width="300" height="375" fill="#E8E5DC" />
-              <!-- Cocktail Shaker Miring dengan Garis Gerak -->
-              <g transform="translate(150, 185) rotate(28)">
-                <rect x="-35" y="-65" width="70" height="130" rx="8" fill="#141413" />
-                <polygon points="-28,-65 28,-65 18,-95 -18,-95" fill="#B82925" stroke="#141413" stroke-width="3" />
-                <rect x="-12" y="-110" width="24" height="15" fill="#141413" />
-              </g>
-              <!-- Garis Aksi Komik -->
-              <path d="M55 110 Q40 150 55 190 M240 160 Q255 200 240 240" fill="none" stroke="#B82925" stroke-width="3" stroke-dasharray="8 5" />
-            </svg>
-          </div>
-          <div class="triptych-caption">
-            02. Shake your spirit. Let the night play on.
-          </div>
-        </div>
-
-        <!-- Panel 3: Pour -->
-        <div class="triptych-card">
-          <div class="triptych-panel">
-            <span class="sfx-badge" style="bottom: 24px; right: 16px; font-size: 1rem;">POUR...</span>
-            <svg viewBox="0 0 300 375" width="100%" height="100%">
-              <rect width="300" height="375" fill="#EFECE4" />
-              <!-- Aliran Cairan Merah Marun ke Gelas Coupe -->
-              <path d="M185 45 C175 110, 155 150, 150 205" fill="none" stroke="#B82925" stroke-width="8" stroke-linecap="round" />
-              <path d="M85 195 Q150 245 215 195 Z" fill="#B82925" stroke="#141413" stroke-width="3" />
-              <line x1="150" y1="220" x2="150" y2="315" stroke="#141413" stroke-width="4" />
-              <ellipse cx="150" cy="315" rx="45" ry="8" fill="none" stroke="#141413" stroke-width="3" />
-            </svg>
-          </div>
-          <div class="triptych-caption">
-            03. Pour your spirit. What happens next is up to you.
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ==================== 3. SELECT HOUSES & HARD-SPLIT BLACK FOOTER ==================== -->
-  <section class="forthcoming-section">
-    <h2 class="forthcoming-title">SELECT HOUSES<br>FORTHCOMING</h2>
-    <div class="forthcoming-sub">Indulge Now, Atone Later</div>
   </section>
 
-  <footer class="footer-black">
-    <div class="footer-logo-group">
-      <svg viewBox="0 0 64 64" fill="none" stroke="#F4F3EF" stroke-width="1.4">
-        <circle cx="32" cy="32" r="28" />
-        <path d="M16 46 C16 24, 48 24, 48 46" />
-        <circle cx="32" cy="22" r="5" />
-        <path d="M24 46 L27 29 L37 29 L40 46" />
-      </svg>
-      <div class="footer-brand-script">Santioni<br>Spirits</div>
-    </div>
+  <!-- ==================== 3. PORTAL KAMPUS INTERAKTIF ==================== -->
+  <main class="campus-hub">
 
-    <div class="footer-links-right">
-      <a href="#instagram">INSTAGRAM</a>
-      <a href="mailto:indulge@santionispirits.com">indulge@santionispirits.com</a>
-      <div class="footer-credits">
-        Made by <span>Active Theory</span> and <span>Plan8</span> &nbsp; <span>Legal</span>
+    <!-- A. PAPAN PENGUMUMAN KAMPUS -->
+    <section id="pengumuman">
+      <div class="section-header">
+        <div>
+          <span class="sub-tag">Warta Resmi &amp; Agenda Akademik</span>
+          <h2>Papan Pengumuman</h2>
+        </div>
+        <div class="filter-bar" id="bulletinFilters">
+          <button class="filter-btn active" data-filter="all">Semua</button>
+          <button class="filter-btn" data-filter="Akademik">Akademik</button>
+          <button class="filter-btn" data-filter="Kegiatan">Kegiatan</button>
+          <button class="filter-btn" data-filter="Beasiswa">Beasiswa</button>
+        </div>
       </div>
-    </div>
-  </footer>
 
-  <script>
-    gsap.registerPlugin(ScrollTrigger);
+      <div class="bulletin-grid" id="bulletinGrid">
+        <article class="bulletin-card" data-category="Akademik">
+          <span class="bulletin-badge">Akademik</span>
+          <h3>Batas Akhir Pengajuan Judul Skripsi &amp; Tugas Akhir Semester Genap</h3>
+          <p>Mahasiswa tingkat akhir wajib mengunggah draf proposal yang telah disetujui dosen pembimbing melalui portal akademik.</p>
+          <div class="bulletin-meta">Tenggat: 30 November 2026 • Biro Akademik</div>
+        </article>
 
-    // 1. Munculkan Label Jangkar Merah Kiri-Kanan Setelah Melewati Hero Hitam
-    ScrollTrigger.create({
-      trigger: '.comic-world',
-      start: 'top 60%',
-      onEnter: () => document.getElementById('cornerAnchors').classList.add('visible'),
-      onLeaveBack: () => document.getElementById('cornerAnchors').classList.remove('visible')
-    });
+        <article class="bulletin-card" data-category="Kegiatan">
+          <span class="bulletin-badge">Kegiatan</span>
+          <h3>Seminar Kebudayaan Priangan &amp; Lokakarya Jurnalistik Warga</h3>
+          <p>Diskusi terbuka membedah pelestarian tradisi lisan Sunda serta teknik penulisan esai populer untuk media digital.</p>
+          <div class="bulletin-meta">Jadwal: 5 Desember 2026 • Aula Utama Kampus</div>
+        </article>
 
-    // 2. Animasi Tetesan Tinta Putih Naik Saat Di-scroll
-    gsap.to('.ink-drop', {
-      y: -45,
-      scrollTrigger: {
-        trigger: '.hero-opening',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 1
-      }
-    });
+        <article class="bulletin-card" data-category="Beasiswa">
+          <span class="bulletin-badge">Beasiswa</span>
+          <h3>Pembukaan Hibah Riset Mahasiswa &amp; Pengabdian Masyarakat Desa</h3>
+          <p>Pendanaan penuh bagi kelompok studi mahasiswa yang merancang solusi teknologi tepat guna dan literasi di wilayah Garut.</p>
+          <div class="bulletin-meta">Pendaftaran s.d. 12 Desember 2026 • LPPM</div>
+        </article>
+      </div>
+    </section>
 
-    // 3. Animasi Parallax Panel Komik & Portal Merah Berdenyut
-    gsap.to('.portal-orb', {
-      scale: 1.08,
-      rotation: 12,
-      duration: 3.5,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut'
-    });
+    <!-- B. WARTA & TULISAN MAHASISWA -->
+    <section id="warta">
+      <div class="section-header">
+        <div>
+          <span class="sub-tag">Esai, Liputan &amp; Opini Mahasiswa</span>
+          <h2>Mimbar Tulisan</h2>
+        </div>
+        <button class="btn-primary-ink" id="openSubmitModal2">+ Kirim Tulisan Kamu</button>
+      </div>
 
-    gsap.utils.toArray('.parallax-subject').forEach((subject) => {
-      gsap.fromTo(subject,
-        { y: 25 },
-        {
-          y: -25,
-          scrollTrigger: {
-            trigger: subject,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1.2
-          }
-        }
-      );
-    });
+      <div class="articles-grid" id="articlesGrid">
+        <!-- Artikel 1 -->
+        <article class="article-card">
+          <div>
+            <div class="article-cat">Budaya &amp; Pendidikan</div>
+            <h3>Filosofi Pamidangan: Mengapa Budaya Debat Mahasiswa Harus Menjunjung Etika Silih Asah?</h3>
+            <p class="article-excerpt">
+              Dalam tradisi seni ketangkasan Domba Garut, kemenangan tidak diukur dari melukai lawan, melainkan ketangguhan berdiri dan kepatuhan pada aturan arena. Nilai ini relevan untuk menghidupkan kembali ruang diskusi kampus.
+            </p>
+          </div>
+          <div class="article-footer">
+            <span>Oleh: <strong>Raka Pratama</strong> (Ilmu Komunikasi)</span>
+            <button class="btn-read" onclick="openArticleModal(0)">Baca Lengkap</button>
+          </div>
+        </article>
 
-    // 4. Reveal Kotak Narasi Komik (Pop-Out Caption Boxes)
-    gsap.utils.toArray('.reveal-caption').forEach((box) => {
-      gsap.fromTo(box,
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: box,
-            start: 'top 88%',
-            toggleActions: 'play none none reverse'
-          }
-        }
-      );
-    });
+        <!-- Artikel 2 -->
+        <article class="article-card">
+          <div>
+            <div class="article-cat">Liputan Kampus</div>
+            <h3>Menghidupkan Kembali Pers Mahasiswa di Era Algoritma Media Sosial</h3>
+            <p class="article-excerpt">
+              Tantangan terbesar jurnalisme kampus hari ini bukan kurangnya peristiwa, melainkan bagaimana menyajikan liputan mendalam yang tetap memikat pembaca muda tanpa terjebak judul sensasional.
+            </p>
+          </div>
+          <div class="article-footer">
+            <span>Oleh: <strong>Nisa Nurhaliza</strong> (Jurnalistik)</span>
+            <button class="btn-read" onclick="openArticleModal(1)">Baca Lengkap</button>
+          </div>
+        </article>
+      </div>
+    </section>
 
-    // 5. Efek Suara Ambien Misterius (Web Audio API)
-    const audioBtn = document.getElementById('audioBtn');
-    let audioCtx = null;
-    let isPlaying = false;
-    let droneOsc = null;
+    <!-- C. PAPAN KARIR, MAGANG & PART-TIME -->
+    <section id="karir">
+      <div class="section-header">
+        <div>
+          <span class="sub-tag">Peluang Kerja &amp; Pengalaman Praktis</span>
+          <h2>Magang &amp; Part-Time</h2>
+        </div>
+        <div class="filter-bar" id="jobFilters">
+          <button class="filter-btn active" data-job="all">Semua</button>
+          <button class="filter-btn" data-job="Magang">Magang</button>
+          <button class="filter-btn" data-job="Part-Time">Part-Time</button>
+          <button class="filter-btn" data-job="Proyek">Proyek Lepas</button>
+        </div>
+      </div>
 
-    audioBtn.addEventListener('click', () => {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
+      <div class="jobs-list" id="jobsList">
+        <div class="job-row" data-job-type="Magang">
+          <div class="job-info">
+            <h4>Content Writer &amp; SEO Intern</h4>
+            <div class="job-company">Studio Kreatif Priangan • Garut / Hybrid</div>
+          </div>
+          <div class="job-tags">
+            <span class="job-tag type">Magang</span>
+            <span class="job-tag">3 Bulan</span>
+            <button class="btn-read" onclick="applyJob('Content Writer & SEO Intern')">Lamar Cepat</button>
+          </div>
+        </div>
 
-      if (!isPlaying) {
-        // Membuat suara dengung mistis ("holy sound" portal)
-        droneOsc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        droneOsc.type = 'sine';
-        droneOsc.frequency.setValueAtTime(110, audioCtx.currentTime); // Nada A2 rendah
-        gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
-        
-        droneOsc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        droneOsc.start();
+        <div class="job-row" data-job-type="Part-Time">
+          <div class="job-info">
+            <h4>Barista &amp; Social Media Admin (Shift Sore)</h4>
+            <div class="job-company">Kopi Tarogong Roastery • Garut Kota</div>
+          </div>
+          <div class="job-tags">
+            <span class="job-tag type">Part-Time</span>
+            <span class="job-tag">Fleksibel Kuliah</span>
+            <button class="btn-read" onclick="applyJob('Barista & Social Media Admin')">Lamar Cepat</button>
+          </div>
+        </div>
 
-        isPlaying = true;
-        audioBtn.classList.add('playing');
-      } else {
-        if (droneOsc) droneOsc.stop();
-        isPlaying = false;
-        audioBtn.classList.remove('playing');
-      }
-    });
-  </script>
-</body>
-</html>
+        <div class="job-row" data-job-type="Proyek">
+          <div class="job-info">
+            <h4>Ilustrator &amp; Desainer Grafis Editorial</h4>
+            <div class="job-company">Penerbit Buku Independen Sunda • Remote</div>
+          </div>
+          <div class="job-tags">
+            <span class="job-tag type">Proyek</span>
+            <span class="job-tag">Per Edisi</span>
+            <button class="btn-read
